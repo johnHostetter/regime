@@ -29,7 +29,9 @@ EdgeWithKeyword = namedtuple(
 )
 
 
-class Regime(RoughDecisions):  # inherit from RoughDecisions to have access to functionality
+class Regime(
+    RoughDecisions
+):  # inherit from RoughDecisions to have access to functionality
     """
     The Regime class facilitates the convenient design of self-organizing solutions
     by adding callable function references to a RoughDecisions graph as vertices, and using

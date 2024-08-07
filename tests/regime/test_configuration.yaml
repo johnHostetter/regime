@@ -3,7 +3,7 @@ test_regime:
     alpha: 0.1
   ExampleClassC:
     gamma: 0.7
-unit_tests:
+tests:
   regime:
     submodule:
       ExampleClassB:

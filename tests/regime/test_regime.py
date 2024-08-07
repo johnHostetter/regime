@@ -8,10 +8,11 @@ from typing import Union, Dict, Any
 
 import yaml
 import torch
+import igraph as ig
 
 from regime import Regime, Resource
 from regime.utils import RegimeMeta, hyperparameter
-from unit_tests.regime.submodule import (
+from tests.regime.submodule import (
     ExampleClassB,
 )  # class located here to showcase hierarchy
 
@@ -144,7 +145,7 @@ class TestRegime(unittest.TestCase):
         # value None means that the hyperparameter is not set
         assert regime.required_hyperparameters == {
             # follows the project structure
-            "unit_tests": {"regime": {"submodule": {"ExampleClassB": {"beta": None}}}},
+            "tests": {"regime": {"submodule": {"ExampleClassB": {"beta": None}}}},
             "test_regime": {
                 "ExampleClassC": {"gamma": None},
                 "ExampleClassA": {"alpha": None},
@@ -165,7 +166,7 @@ class TestRegime(unittest.TestCase):
         )
         assert defined_hyperparameters == {
             # follows the project structure
-            "unit_tests": {"regime": {"submodule": {"ExampleClassB": {"beta": BETA}}}},
+            "tests": {"regime": {"submodule": {"ExampleClassB": {"beta": BETA}}}},
             "test_regime": {
                 "ExampleClassC": {"gamma": GAMMA},
                 "ExampleClassA": {"alpha": ALPHA},
@@ -453,3 +454,35 @@ class TestRegime(unittest.TestCase):
 
         # --- check that the final output is as expected ---
         assert result == FINAL_RESULT
+
+        # --- demonstrate plotting of the Regime ---
+        layout = regime.graph.layout("sugiyama")
+        visual_style = {
+            "margin": 60,  # pads whitespace around the plot
+            "edge_width": 2.0,
+            "edge_curved": 0.1,
+            "edge_arrow_size": 2.0,
+            "edge_arrow_width": 0.5,
+            "vertex_label_dist": 2.5,  # distance of label from the vertex
+            "vertex_label_color": "#029e73",
+            "vertex_label_angle": 3.14,
+            "vertex_label_size": 10,
+            "vertex_size": 20,
+            "vertex_color": [
+                "#0173b2" if vertex["type"] == "process" else "#de8f05"
+                for vertex in regime.graph.vs
+            ],
+            "vertex_shape": [
+                "circle" if vertex["type"] == "process" else "rectangle"
+                for vertex in regime.graph.vs
+            ],
+        }  # margin controls the amount of padding around the plot
+        pretty_names = [name.split(".")[-1] for name in regime.graph.vs["name"]]
+        regime.graph.vs["label"] = pretty_names
+        ig.plot(
+            regime.graph,
+            target="test_regime.pdf",  # save the plot as a PDF
+            layout=layout,  # specify the layout of the vertices
+            autocurve=True,  # curved edges
+            **visual_style,  # apply the visual style
+        )
