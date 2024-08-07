@@ -1,0 +1,10 @@
+test_regime:
+  ExampleClassA:
+    alpha: 0.1
+  ExampleClassC:
+    gamma: 0.7
+unit_tests:
+  regime:
+    submodule:
+      ExampleClassB:
+        beta: 0.3
