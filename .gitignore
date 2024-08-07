@@ -1,4 +1,5 @@
 # project files
+tests/regime/*.png
 tests/regime/*.pdf
 
 # PyCharm files

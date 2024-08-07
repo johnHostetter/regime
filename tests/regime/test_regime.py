@@ -479,10 +479,11 @@ class TestRegime(unittest.TestCase):
         }  # margin controls the amount of padding around the plot
         pretty_names = [name.split(".")[-1] for name in regime.graph.vs["name"]]
         regime.graph.vs["label"] = pretty_names
-        ig.plot(
-            regime.graph,
-            target="test_regime.pdf",  # save the plot as a PDF
-            layout=layout,  # specify the layout of the vertices
-            autocurve=True,  # curved edges
-            **visual_style,  # apply the visual style
-        )
+        for file_extension in ["png", "pdf"]:
+            ig.plot(
+                regime.graph,
+                target=f"test_regime.{file_extension}",  # save the plot as a PNG and PDF
+                layout=layout,  # specify the layout of the vertices
+                autocurve=True,  # curved edges
+                **visual_style,  # apply the visual style
+            )
