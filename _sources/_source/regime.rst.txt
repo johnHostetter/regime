@@ -1,16 +1,17 @@
 regime package
 ==============
 
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   regime.flow
+   regime.nodes
+
 Submodules
 ----------
-
-regime.threads module
----------------------
-
-.. automodule:: regime.threads
-   :members:
-   :undoc-members:
-   :show-inheritance:
 
 regime.utils module
 -------------------

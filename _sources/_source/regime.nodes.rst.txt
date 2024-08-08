@@ -1,0 +1,37 @@
+regime.nodes package
+====================
+
+Submodules
+----------
+
+regime.nodes.decorators module
+------------------------------
+
+.. automodule:: regime.nodes.decorators
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+regime.nodes.hyperparameters module
+-----------------------------------
+
+.. automodule:: regime.nodes.hyperparameters
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+regime.nodes.meta module
+------------------------
+
+.. automodule:: regime.nodes.meta
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: regime.nodes
+   :members:
+   :undoc-members:
+   :show-inheritance:

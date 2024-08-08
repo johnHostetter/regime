@@ -1,0 +1,29 @@
+regime.flow package
+===================
+
+Submodules
+----------
+
+regime.flow.components module
+-----------------------------
+
+.. automodule:: regime.flow.components
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+regime.flow.threads module
+--------------------------
+
+.. automodule:: regime.flow.threads
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: regime.flow
+   :members:
+   :undoc-members:
+   :show-inheritance:
