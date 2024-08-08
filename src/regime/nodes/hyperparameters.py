@@ -1,23 +1,14 @@
-from typing import Any, Dict
+"""
+All functions related managing hyperparameters are defined here (except for HyperparameterMeta).
+"""
 
+from typing import Dict
+
+from regime.nodes import Node
 from regime.utils import module_path_to_dict
 
 
-def collect_hyperparameters(cls: Any) -> Dict[str, None]:
-    """
-    Collect hyperparameters from a class.
-
-    Args:
-        cls: The class to collect hyperparameters from.
-
-    Returns:
-        A dictionary of hyperparameters. The keys are the hyperparameter names and the values are
-        their corresponding (default?) values.
-    """
-    return cls._hyperparameters  # pylint: disable=protected-access
-
-
-def make_hyperparameters_dict(cls, include_hyperparameters=True) -> dict:
+def make_hyperparameters_dict(cls: Node, include_hyperparameters=True) -> dict:
     """
     Generate a nested dictionary of hyperparameters for the given class (including class name).
     Whether to include the hyperparameters themselves is optional, but the class name is always
@@ -33,7 +24,7 @@ def make_hyperparameters_dict(cls, include_hyperparameters=True) -> dict:
     """
     hyperparameters: Dict = {}
     if include_hyperparameters:
-        hyperparameters: Dict[str, None] = collect_hyperparameters(cls)
+        hyperparameters: Dict[str, None] = cls.hyperparameters()
 
     if len(hyperparameters) == 0:
         return {}  # no hyperparameters to include

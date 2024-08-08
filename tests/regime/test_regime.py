@@ -28,14 +28,10 @@ FINAL_RESULT: Dict[str, Union[str, int]] = {
 
 
 # classes used to demonstrate the Regime functionality
-class ExampleClassA(Node):
+class ExampleClassA(Node):  # pylint: disable=too-few-public-methods
     """
     Example class A that uses the Node metaclass.
     """
-
-    @staticmethod
-    def resource_name() -> str:
-        return "example_a"
 
     @hyperparameter("alpha")
     def __call__(
@@ -44,28 +40,20 @@ class ExampleClassA(Node):
         return input_data.sum().item() + alpha
 
 
-class ExampleClassC(Node):
+class ExampleClassC(Node):  # pylint: disable=too-few-public-methods
     """
     Example class C that uses the Node metaclass.
     """
-
-    @staticmethod
-    def resource_name() -> str:
-        return "example_c"
 
     @hyperparameter("gamma")
     def __call__(self, example_a: float, example_b: float, gamma: float) -> float:
         return example_a + example_b + gamma
 
 
-class ExampleClassD(Node):
+class ExampleClassD(Node):  # pylint: disable=too-few-public-methods
     """
     Example class D that uses the Node metaclass.
     """
-
-    @staticmethod
-    def resource_name() -> str:
-        return "example_d"
 
     def __call__(self, example_c: float) -> int:
         return FINAL_VALUE

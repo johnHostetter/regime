@@ -7,13 +7,10 @@ import torch
 from regime import Node, hyperparameter
 
 
-class ExampleClassB(Node):
+class ExampleClassB(Node):  # pylint: disable=too-few-public-methods
     """
     Example class B that uses the RegimeMeta metaclass.
     """
-
-    def __init__(self, resource_name: str):
-        super().__init__(resource_name)
 
     @hyperparameter("beta")
     def __call__(

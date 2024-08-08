@@ -1,4 +1,14 @@
-from regime.flow import *
-from regime.flow.components import *  # e.g., the Resource and Process namedtuples
-from regime.nodes import *
-from regime.nodes.decorators import *  # e.g., the hyperparameter decorator
+"""
+Allows for easier imports of the regime package for features that are regularly used.
+"""
+
+from .flow import Regime, Process, Resource
+from .nodes import Node, hyperparameter
+
+__all__ = [
+    "Regime",
+    "Resource",
+    "Process",
+    "Node",
+    "hyperparameter",
+]

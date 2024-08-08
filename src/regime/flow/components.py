@@ -1,6 +1,7 @@
 """
 This module defines the simple components expected and used for the flow of a Regime.
 """
+
 from collections import namedtuple
 
 # a resource (e.g., a dataset, a tensor, a module, a list, a configuration setting, or a device)
