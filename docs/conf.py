@@ -23,7 +23,7 @@ import sys
 project = "regime"
 copyright = "2024, John Wesley Hostetter"
 author = "John Wesley Hostetter"
-release = "0.0.2"
+release = "0.0.3"
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
