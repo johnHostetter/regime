@@ -1,0 +1,7 @@
+regime
+======
+
+.. toctree::
+   :maxdepth: 4
+
+   regime

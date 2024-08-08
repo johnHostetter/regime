@@ -1,0 +1,29 @@
+regime package
+==============
+
+Submodules
+----------
+
+regime.threads module
+---------------------
+
+.. automodule:: regime.threads
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+regime.utils module
+-------------------
+
+.. automodule:: regime.utils
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: regime
+   :members:
+   :undoc-members:
+   :show-inheritance:
