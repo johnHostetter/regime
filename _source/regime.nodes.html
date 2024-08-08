@@ -113,24 +113,10 @@ hyperparameters in a class, so easier configuration management can occur.</p>
 </section>
 <section id="module-regime.nodes.hyperparameters">
 <span id="regime-nodes-hyperparameters-module"></span><h2>regime.nodes.hyperparameters module<a class="headerlink" href="#module-regime.nodes.hyperparameters" title="Link to this heading"></a></h2>
-<dl class="py function">
-<dt class="sig sig-object py" id="regime.nodes.hyperparameters.collect_hyperparameters">
-<span class="sig-prename descclassname"><span class="pre">regime.nodes.hyperparameters.</span></span><span class="sig-name descname"><span class="pre">collect_hyperparameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#regime.nodes.hyperparameters.collect_hyperparameters" title="Link to this definition"></a></dt>
-<dd><p>Collect hyperparameters from a class.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>cls</strong> – The class to collect hyperparameters from.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A dictionary of hyperparameters. The keys are the hyperparameter names and the values are
-their corresponding (default?) values.</p>
-</dd>
-</dl>
-</dd></dl>
-
+<p>All functions related managing hyperparameters are defined here (except for HyperparameterMeta).</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="regime.nodes.hyperparameters.make_hyperparameters_dict">
-<span class="sig-prename descclassname"><span class="pre">regime.nodes.hyperparameters.</span></span><span class="sig-name descname"><span class="pre">make_hyperparameters_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_hyperparameters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#regime.nodes.hyperparameters.make_hyperparameters_dict" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">regime.nodes.hyperparameters.</span></span><span class="sig-name descname"><span class="pre">make_hyperparameters_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#regime.nodes.nodes.Node" title="regime.nodes.nodes.Node"><span class="pre">Node</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_hyperparameters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#regime.nodes.hyperparameters.make_hyperparameters_dict" title="Link to this definition"></a></dt>
 <dd><p>Generate a nested dictionary of hyperparameters for the given class (including class name).
 Whether to include the hyperparameters themselves is optional, but the class name is always
 included; default is to include hyperparameters.</p>
@@ -165,9 +151,93 @@ has been decorated with the hyperparameter decorator) and stores them in a dicti
 </section>
 <section id="module-regime.nodes.nodes">
 <span id="regime-nodes-nodes-module"></span><h2>regime.nodes.nodes module<a class="headerlink" href="#module-regime.nodes.nodes" title="Link to this heading"></a></h2>
+<p>Define the Node class, which is the base class for all Regime compatible objects.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="regime.nodes.nodes.Node">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">regime.nodes.nodes.</span></span><span class="sig-name descname"><span class="pre">Node</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">resource_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#regime.nodes.nodes.Node" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>The Node class defines the structure of a Regime compatible object. It can automatically
+collect hyperparameters from the class and store them in a dictionary, as well as ensures the
+class has a resource_name method and provides a default implementation for the edges method(s)
+(used to direct the data flow of the algorithm).</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="regime.nodes.nodes.Node.arg_only_edges">
+<span class="sig-name descname"><span class="pre">arg_only_edges</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#regime.nodes.nodes.Node.arg_only_edges" title="Link to this definition"></a></dt>
+<dd><p>Edges that bring arguments except hyperparameters into the algorithm.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A list of 3-tuples, where the first element is the source, the second element is the
+target, and the third element is the order of the argument in the
+target’s __call__ method.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="regime.nodes.nodes.Node.edges">
+<span class="sig-name descname"><span class="pre">edges</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#regime.nodes.nodes.Node.edges" title="Link to this definition"></a></dt>
+<dd><p>Edges that bring data into the algorithm and distribute the output of the algorithm
+to the next algorithm in the pipeline.</p>
+<p>Used for constructing Regime objects.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A list of 3-tuples, where the first element is the source, the second element is the
+target, and the third element is the order of the argument in the
+target’s __call__ method.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="regime.nodes.nodes.Node.hyperparameter_edges">
+<span class="sig-name descname"><span class="pre">hyperparameter_edges</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#regime.nodes.nodes.Node.hyperparameter_edges" title="Link to this definition"></a></dt>
+<dd><p>Edges that bring hyperparameters into the algorithm.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A list of 3-tuples, where the first element is the source, the second element is the
+target, and the third element is the order of the argument in the
+target’s __call__ method.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="regime.nodes.nodes.Node.hyperparameters">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">hyperparameters</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#regime.nodes.nodes.Node.hyperparameters" title="Link to this definition"></a></dt>
+<dd><p>Get the hyperparameters of the class.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="regime.nodes.nodes.Node.source_edges">
+<span class="sig-name descname"><span class="pre">source_edges</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#regime.nodes.nodes.Node.source_edges" title="Link to this definition"></a></dt>
+<dd><p>Edges that bring data into the algorithm.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A list of 3-tuples, where the first element is the source, the second element is the
+target, and the third element is the order of the argument in the
+target’s __call__ method.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="regime.nodes.nodes.Node.target_edges">
+<span class="sig-name descname"><span class="pre">target_edges</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#regime.nodes.nodes.Node.target_edges" title="Link to this definition"></a></dt>
+<dd><p>Edges that distribute the output of the algorithm to the next algorithm in the pipeline.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A list of 3-tuples, where the first element is the source, the second element is the
+target, and the third element is the order of the argument for the target.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 <section id="module-regime.nodes">
 <span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-regime.nodes" title="Link to this heading"></a></h2>
+<p>Expose all the functionality related to Nodes in the Regime library that end-users should use.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="regime.nodes.Node">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">regime.nodes.</span></span><span class="sig-name descname"><span class="pre">Node</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">resource_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#regime.nodes.Node" title="Link to this definition"></a></dt>
@@ -218,6 +288,12 @@ target’s __call__ method.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="regime.nodes.Node.hyperparameters">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">hyperparameters</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#regime.nodes.Node.hyperparameters" title="Link to this definition"></a></dt>
+<dd><p>Get the hyperparameters of the class.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="regime.nodes.Node.source_edges">
 <span class="sig-name descname"><span class="pre">source_edges</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#regime.nodes.Node.source_edges" title="Link to this definition"></a></dt>
 <dd><p>Edges that bring data into the algorithm.</p>
@@ -242,6 +318,21 @@ target, and the third element is the order of the argument for the target.</p>
 </dl>
 </dd></dl>
 
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="regime.nodes.hyperparameter">
+<span class="sig-prename descclassname"><span class="pre">regime.nodes.</span></span><span class="sig-name descname"><span class="pre">hyperparameter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#regime.nodes.hyperparameter" title="Link to this definition"></a></dt>
+<dd><p>The hyperparameter decorator for Regime compatible classes. Allows for the explicit tagging of
+hyperparameters in a class, so easier configuration management can occur.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>*args</strong> – The hyperparameters to tag.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The decorator.</p>
+</dd>
+</dl>
 </dd></dl>
 
 </section>

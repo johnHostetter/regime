@@ -147,6 +147,227 @@
 </section>
 <section id="module-regime.flow.regime">
 <span id="regime-flow-regime-module"></span><h2>regime.flow.regime module<a class="headerlink" href="#module-regime.flow.regime" title="Link to this heading"></a></h2>
+<p>Implements functions and classes responsible for the design of soft computing solutions,
+such as the Regime class.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="regime.flow.regime.Regime">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">regime.flow.regime.</span></span><span class="sig-name descname"><span class="pre">Regime</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">callables</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Set</span><span class="p"><span class="pre">[</span></span><span class="pre">callable</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resources</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">None</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Set</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#regime.flow.components.Resource" title="regime.flow.components.Resource"><span class="pre">Resource</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#regime.flow.regime.Regime" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">RoughDecisions</span></code></p>
+<p>The Regime class facilitates the convenient design of self-organizing solutions
+by adding callable function references to a RoughDecisions graph as vertices, and using
+the edges that connect the vertices (i.e., functions) to determine the flow of
+data/information from function to function.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="regime.flow.regime.Regime.add_processes">
+<span class="sig-name descname"><span class="pre">add_processes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#regime.flow.regime.Regime.add_processes" title="Link to this definition"></a></dt>
+<dd><p>Add the processes to the Regime’s graph as isolated vertices.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="regime.flow.regime.Regime.add_resources">
+<span class="sig-name descname"><span class="pre">add_resources</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">resources</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Set</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#regime.flow.components.Resource" title="regime.flow.components.Resource"><span class="pre">Resource</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#regime.flow.regime.Regime.add_resources" title="Link to this definition"></a></dt>
+<dd><p>Add resources as isolated vertices in the Regime’s graph. This is encouraged if a priori
+resources are to be used during the Regime’s execution.</p>
+<p>Note 1: If a Resource is to be created from a Process, it is not required to add it.</p>
+<p>Note 2: Not all Resource objects are required to be used in the Regime’s execution, but they
+are available for use if needed. If a resource is not used, it will not be modified.</p>
+<p>Note 3: If a resource is used, it will be modified by the process that uses it.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>resources</strong> – A set of resources to add to the graph.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="regime.flow.regime.Regime.define_flow">
+<span class="sig-name descname"><span class="pre">define_flow</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">edges</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clean_up</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#regime.flow.regime.Regime.define_flow" title="Link to this definition"></a></dt>
+<dd><p>Links callables in the Regime’s graph (via RoughDecisions) if they exist as vertices.</p>
+<p>This allows the transfer of inputs and outputs to easily occur later on.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>edges</strong> – An iterable collection called edges, where each element in the collection is</p></li>
+<li><p><strong>form</strong> (<em>a 3-tuple such that it follows the</em>)</p></li>
+<li><p><strong>'arg_specifier'</strong> (<em>this is called</em>)</p></li>
+<li><p><strong>clean_up</strong> – Whether to remove any isolated vertices from the graph after adding the edges.</p></li>
+<li><p><strong>True.</strong> (<em>Default is</em>)</p></li>
+<li><p><strong>However</strong></p></li>
+<li><p><strong>a</strong> (<em>this method expects 'source' and 'target' to be referencing</em>)</p></li>
+<li><p><strong>reference.</strong> (<em>callable function</em>)</p></li>
+<li><p><strong>say</strong> (<em>The arg_specifier in a 3-tuple for an edge resolves the following dilemma; let's</em>)</p></li>
+<li><p><strong>it</strong> (<em>Wang-Mendel expects CLIP and ECM to feed into</em>)</p></li>
+<li><p><strong>output</strong> (<em>and expects 2 arguments. Which</em>)</p></li>
+<li><p><strong>this</strong> (<em>from which function goes where? The arg_specifier resolves this by specifying</em>)</p></li>
+<li><p><strong>Alternatively</strong> (<em>order.</em>)</p></li>
+<li><p><strong>name</strong> (<em>a keyword argument can be used to specify the argument</em>)</p></li>
+<li><p><strong>(</strong><strong>preferred</strong><strong>)</strong><strong>.</strong></p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="regime.flow.regime.Regime.define_hyperparameters">
+<span class="sig-name descname"><span class="pre">define_hyperparameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">configuration</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">OrderedDict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">remaining_hyperparameters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">None</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">dict</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#regime.flow.regime.Regime.define_hyperparameters" title="Link to this definition"></a></dt>
+<dd><p>Parses the configuration settings to find the necessary hyperparameters for the processes
+that have been added to the Regime graph.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>configuration</strong> – The configuration settings to use.</p></li>
+<li><p><strong>remaining_hyperparameters</strong> – The required hyperparameters for the processes that have</p></li>
+<li><p><strong>None</strong> (<em>yet to be defined. If</em>)</p></li>
+<li><p><strong>the</strong> (<em>the required hyperparameters will be pulled from</em>)</p></li>
+<li><p><strong>Otherwise</strong> (<em>Regime object.</em>)</p></li>
+<li><p><strong>dictionary</strong> (<em>a recursive call has taken place and the nested</em>)</p></li>
+<li><p><strong>None.</strong> (<em>is being traversed. Default is</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A dictionary of the necessary hyperparameters populated with their values.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="regime.flow.regime.Regime.get_keyword_arguments">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_keyword_arguments</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vertex</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Vertex</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#regime.flow.regime.Regime.get_keyword_arguments" title="Link to this definition"></a></dt>
+<dd><p>Given a vertex from the Regime graph, find the keyword arguments that are required for the
+vertex’s callable to execute by referencing the outputs of the predecessors_vertices.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>vertex</strong> – The vertex from the Regime graph.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A dictionary of keyword arguments, where the keys are the names of the arguments,
+and the values are the outputs of the predecessors_vertices.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="regime.flow.regime.Regime.get_vertex">
+<span class="sig-name descname"><span class="pre">get_vertex</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vertex_reference</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">callable</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Vertex</span></span></span><a class="headerlink" href="#regime.flow.regime.Regime.get_vertex" title="Link to this definition"></a></dt>
+<dd><p>Get a vertex from the graph by its name or callable function reference. If it is a string,
+but does not yet exist, then we assume it is a resource from an intermediate process and
+create it.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>vertex_reference</strong> – The name of the vertex or the callable function reference.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The vertex object from the graph.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="regime.flow.regime.Regime.process_frontier">
+<span class="sig-name descname"><span class="pre">process_frontier</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">frontier_vertex</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frontier_vertices</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">thread</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Vertex</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#regime.flow.threads.ComponentThread" title="regime.flow.threads.ComponentThread"><span class="pre">ComponentThread</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#regime.flow.regime.Regime.process_frontier" title="Link to this definition"></a></dt>
+<dd><p>Execute a process vertex (i.e., frontier_vertex) in the Regime graph.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>frontier_vertex</strong> – The vertex to process.</p></li>
+<li><p><strong>frontier_vertices</strong> – The list of vertices that are part of the frontier.</p></li>
+<li><p><strong>thread</strong> – The thread to execute the process.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A tuple of the updated frontier vertices and the thread that executed the process</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="regime.flow.regime.Regime.process_vertices">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">process_vertices</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Vertex</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#regime.flow.regime.Regime.process_vertices" title="Link to this definition"></a></dt>
+<dd><p>Get the process vertices from the Regime graph.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A list of process vertices.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="regime.flow.regime.Regime.setup">
+<span class="sig-name descname"><span class="pre">setup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">configuration</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">None</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">OrderedDict</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resources</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">None</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Set</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#regime.flow.components.Resource" title="regime.flow.components.Resource"><span class="pre">Resource</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edges</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">None</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clean_up</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#regime.flow.regime.Regime.setup" title="Link to this definition"></a></dt>
+<dd><p>Set up the Regime graph with the processes, resources, and edges that have been
+defined in the Regime object. Most of this is optional, as the Regime object can be
+set up in stages.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>configuration</strong> – The configuration settings - must define all required hyperparameters;</p></li>
+<li><p><strong>defined.</strong> (<em>optional if no hyperparameters are required</em><em> or </em><em>are already</em>)</p></li>
+<li><p><strong>resources</strong> – Optional resources to add to the graph.</p></li>
+<li><p><strong>edges</strong> – Optional edges to add to the graph.</p></li>
+<li><p><strong>clean_up</strong> – Whether to remove any isolated vertices from the graph after adding the edges.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="regime.flow.regime.Regime.start">
+<span class="sig-name descname"><span class="pre">start</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#regime.flow.regime.Regime.start" title="Link to this definition"></a></dt>
+<dd><p>Run through the Regime’s workflow with the processes and resources that have been linked.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A dictionary mapping the names of the processes/resources to their outputs/values.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="regime.flow.regime.Regime.to_processes">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">to_processes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">callables</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><span class="pre">callable</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#regime.flow.components.Process" title="regime.flow.components.Process"><span class="pre">Process</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#regime.flow.regime.Regime.to_processes" title="Link to this definition"></a></dt>
+<dd><p>A Process is a callable and threadable object. Add the callables that should be permitted
+for use by the Regime.start() method.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>callables</strong> – A list of classes or functions that are allowed to be used.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>a list of Process objects and a dictionary of required
+hyperparameters for those processes.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A tuple of two elements</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="regime.flow.regime.Regime.unprepared_resource_vertices">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">unprepared_resource_vertices</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Vertex</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#regime.flow.regime.Regime.unprepared_resource_vertices" title="Link to this definition"></a></dt>
+<dd><p>Get the resource vertices that have not yet been prepared in the Regime’s execution
+(i.e., they have no output).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A list of resource vertices.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 <section id="module-regime.flow.threads">
 <span id="regime-flow-threads-module"></span><h2>regime.flow.threads module<a class="headerlink" href="#module-regime.flow.threads" title="Link to this heading"></a></h2>
@@ -196,8 +417,37 @@ exception.</p>
 </section>
 <section id="module-regime.flow">
 <span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-regime.flow" title="Link to this heading"></a></h2>
-<p>Implements functions and classes responsible for the design of soft computing solutions,
-such as the Regime class.</p>
+<p>Expose all the functionality related to Nodes in the Regime library that end-users should use.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="regime.flow.Process">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">regime.flow.</span></span><span class="sig-name descname"><span class="pre">Process</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">callable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">thread</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#regime.flow.Process" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="regime.flow.Process.callable">
+<span class="sig-name descname"><span class="pre">callable</span></span><a class="headerlink" href="#regime.flow.Process.callable" title="Link to this definition"></a></dt>
+<dd><p>Alias for field number 1</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="regime.flow.Process.name">
+<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#regime.flow.Process.name" title="Link to this definition"></a></dt>
+<dd><p>Alias for field number 0</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="regime.flow.Process.output">
+<span class="sig-name descname"><span class="pre">output</span></span><a class="headerlink" href="#regime.flow.Process.output" title="Link to this definition"></a></dt>
+<dd><p>Alias for field number 3</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="regime.flow.Process.thread">
+<span class="sig-name descname"><span class="pre">thread</span></span><a class="headerlink" href="#regime.flow.Process.thread" title="Link to this definition"></a></dt>
+<dd><p>Alias for field number 2</p>
+</dd></dl>
+
+</dd></dl>
+
 <dl class="py class">
 <dt class="sig sig-object py" id="regime.flow.Regime">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">regime.flow.</span></span><span class="sig-name descname"><span class="pre">Regime</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">callables</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Set</span><span class="p"><span class="pre">[</span></span><span class="pre">callable</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resources</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">None</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Set</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#regime.flow.components.Resource" title="regime.flow.components.Resource"><span class="pre">Resource</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#regime.flow.Regime" title="Link to this definition"></a></dt>
@@ -413,6 +663,24 @@ hyperparameters for those processes.</p>
 <dd class="field-odd"><p>A list of resource vertices.</p>
 </dd>
 </dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="regime.flow.Resource">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">regime.flow.</span></span><span class="sig-name descname"><span class="pre">Resource</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#regime.flow.Resource" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="regime.flow.Resource.name">
+<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#regime.flow.Resource.name" title="Link to this definition"></a></dt>
+<dd><p>Alias for field number 0</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="regime.flow.Resource.value">
+<span class="sig-name descname"><span class="pre">value</span></span><a class="headerlink" href="#regime.flow.Resource.value" title="Link to this definition"></a></dt>
+<dd><p>Alias for field number 1</p>
 </dd></dl>
 
 </dd></dl>
