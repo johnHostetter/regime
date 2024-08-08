@@ -42,7 +42,7 @@ jobs:
       run: |
         # specify the directory to test (e.g., unit_tests) & directory to save the coverage report
         # this prevents running submodules' tests
-        pytest --cov=./src --cov-report=xml
+        pytest --cov=src/regime tests/regime -p no:warnings -v
     - name: Upload coverage to Codecov 📊
       uses: codecov/codecov-action@v4
       with:
