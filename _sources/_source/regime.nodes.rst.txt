@@ -28,6 +28,14 @@ regime.nodes.meta module
    :undoc-members:
    :show-inheritance:
 
+regime.nodes.nodes module
+-------------------------
+
+.. automodule:: regime.nodes.nodes
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Module contents
 ---------------
 

@@ -12,6 +12,14 @@ regime.flow.components module
    :undoc-members:
    :show-inheritance:
 
+regime.flow.regime module
+-------------------------
+
+.. automodule:: regime.flow.regime
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 regime.flow.threads module
 --------------------------
 
