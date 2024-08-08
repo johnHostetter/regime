@@ -36,11 +36,16 @@ jobs:
         python -m pip install pytest
         python -m pip install codecov
         python -m pip install pytest-cov
-        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+        if [ -f test_requirements.txt ]; then pip install -r test_requirements.txt; fi
         python -m pip install -e .  # install the package
-    - name: Test with pytest and upload code coverage to codecov 🧪
+    - name: Run tests and collect coverage 🧪
       run: |
         # specify the directory to test (e.g., unit_tests) & directory to save the coverage report
         # this prevents running submodules' tests
         pytest --cov=./src --cov-report=xml
-        codecov --token ${{ secrets.CODECOV_TOKEN }}
+    - name: Upload coverage to Codecov 📊
+      uses: codecov/codecov-action@v4
+      with:
+        verbose: true
+      env:
+        CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
