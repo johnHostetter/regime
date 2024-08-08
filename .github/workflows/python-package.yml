@@ -37,12 +37,14 @@ jobs:
         python -m pip install codecov
         python -m pip install pytest-cov
         if [ -f test_requirements.txt ]; then pip install -r test_requirements.txt; fi
-        python -m pip install -e .  # install the package
+        python -m pip install -e src  # install the package
+    - name: Set up Python path 🐍
+      run: echo "PYTHONPATH=src" >> $GITHUB_ENV  # Set PYTHONPATH to include src
     - name: Run tests and collect coverage 🧪
       run: |
         # specify the directory to test (e.g., unit_tests) & directory to save the coverage report
         # this prevents running submodules' tests
-        pytest --cov=src/regime tests/regime -p no:warnings -v
+        pytest --cov=regime tests/regime -p no:warnings -v
     - name: Upload coverage to Codecov 📊
       uses: codecov/codecov-action@v4
       with:
