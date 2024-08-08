@@ -10,8 +10,7 @@ import yaml
 import torch
 import igraph as ig
 
-from regime import Regime, Resource
-from regime.utils import RegimeMeta, hyperparameter
+from regime import Regime, Resource, Node, hyperparameter
 from tests.regime.submodule import (
     ExampleClassB,
 )  # class located here to showcase hierarchy
@@ -29,9 +28,9 @@ FINAL_RESULT: Dict[str, Union[str, int]] = {
 
 
 # classes used to demonstrate the Regime functionality
-class ExampleClassA(RegimeMeta):
+class ExampleClassA(Node):
     """
-    Example class A that uses the RegimeMeta metaclass.
+    Example class A that uses the Node metaclass.
     """
 
     @staticmethod
@@ -45,9 +44,9 @@ class ExampleClassA(RegimeMeta):
         return input_data.sum().item() + alpha
 
 
-class ExampleClassC(RegimeMeta):
+class ExampleClassC(Node):
     """
-    Example class C that uses the RegimeMeta metaclass.
+    Example class C that uses the Node metaclass.
     """
 
     @staticmethod
@@ -59,9 +58,9 @@ class ExampleClassC(RegimeMeta):
         return example_a + example_b + gamma
 
 
-class ExampleClassD(RegimeMeta):
+class ExampleClassD(Node):
     """
-    Example class D that uses the RegimeMeta metaclass.
+    Example class D that uses the Node metaclass.
     """
 
     @staticmethod
@@ -94,12 +93,12 @@ class TestRegime(unittest.TestCase):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.callables: Union[RegimeMeta, callable] = {
-            ExampleClassA,
-            ExampleClassB,
-            ExampleClassC,
+        self.callables: Union[Node, callable] = [
+            ExampleClassA(resource_name="example_a"),
+            ExampleClassB(resource_name="example_b"),
+            ExampleClassC(resource_name="example_c"),
             example_func,
-        }  # either a function or a RegimeMeta object are allowed
+        ]  # either a function or a Node object are allowed
         self.data = torch.zeros(10, 2)
         with open("test_configuration.yaml", "r", encoding="utf8") as file:
             self.config = yaml.safe_load(file)
@@ -182,8 +181,8 @@ class TestRegime(unittest.TestCase):
         """
         regime = Regime(callables=self.callables)
         edges = [
-            (ExampleClassA, ExampleClassC, 0),
-            (ExampleClassB, ExampleClassC, 1),
+            (self.callables[0], self.callables[2], 0),
+            (self.callables[1], self.callables[2], 1),
         ]
         # create a config that satisfies the required hyperparameters
         # set up the Regime object with the configuration
@@ -307,9 +306,9 @@ class TestRegime(unittest.TestCase):
         """
         regime = Regime(callables=self.callables)
         edges = [
-            (ExampleClassA, ExampleClassC, 0),
-            (ExampleClassB, ExampleClassC, 1),
-            ("gamma", ExampleClassC, 2),
+            (self.callables[0], self.callables[2], 0),
+            (self.callables[1], self.callables[2], 1),
+            ("gamma", self.callables[2], 2),
         ]
         regime.setup(
             configuration=self.config,
@@ -324,8 +323,8 @@ class TestRegime(unittest.TestCase):
 
         # test that we can decide to add more edges to the regime's workflow
         more_edges = [
-            ("input", ExampleClassA, 0),
-            ("input", ExampleClassB, 0),
+            ("input", self.callables[0], 0),
+            ("input", self.callables[1], 0),
         ]
         regime.define_flow(more_edges)
         assert len(regime.graph.es) == len(edges) + len(more_edges)
@@ -338,7 +337,7 @@ class TestRegime(unittest.TestCase):
             None
         """
         regime = Regime(callables=self.callables)
-        edges = ExampleClassA.edges() + ExampleClassB.edges()
+        edges = self.callables[0].edges() + self.callables[1].edges()
         regime.setup(
             configuration=self.config,
             resources={
@@ -353,14 +352,14 @@ class TestRegime(unittest.TestCase):
         )  # (incl. data & config vertices)
         assert len(regime.graph.es) == len(edges)
 
-        more_edges = ExampleClassC.edges()
+        more_edges = self.callables[2].edges()
         regime.define_flow(more_edges)
         assert len(regime.graph.es) == len(edges) + len(
             more_edges
         )  # edges added to existing
 
         # find the vertex for this function & its predecessors
-        target_vertex = regime.graph.vs.find(callable_eq=ExampleClassC)
+        target_vertex = regime.graph.vs.find(callable_eq=self.callables[2])
 
         expected_kwargs = {
             "example_a": None,
@@ -387,14 +386,9 @@ class TestRegime(unittest.TestCase):
         Returns:
             KnowledgeBase
         """
+        class_d = ExampleClassD(resource_name="example_d")
         regime = Regime(
-            callables={
-                ExampleClassA,
-                ExampleClassB,
-                ExampleClassC,
-                ExampleClassD,
-                example_func,
-            },
+            callables=self.callables + [class_d],
             resources={
                 Resource(name="input_data", value=self.data),
                 Resource(name="device", value=AVAILABLE_DEVICE),
@@ -403,10 +397,10 @@ class TestRegime(unittest.TestCase):
         )
         regime.setup(
             configuration=self.config,
-            edges=ExampleClassA.edges()
-            + ExampleClassB.edges()
-            + ExampleClassC.edges()
-            + ExampleClassD.edges()
+            edges=self.callables[0].edges()
+            + self.callables[1].edges()
+            + self.callables[2].edges()
+            + class_d.edges()
             + [
                 ["example_b", example_func, 0]
             ],  # example_func is a no-op here, but used to showcase the feature
@@ -415,7 +409,9 @@ class TestRegime(unittest.TestCase):
         result: Dict[str, Union[str, float]] = regime.start()
 
         # --- test info flowed properly from input_data to ExampleClassA ---
-        actual_kwargs = regime.get_keyword_arguments(regime.get_vertex(ExampleClassA))
+        actual_kwargs = regime.get_keyword_arguments(
+            regime.get_vertex(self.callables[0])
+        )
         expected_kwargs = {
             "input_data": self.data,
             "alpha": ALPHA,
@@ -424,7 +420,9 @@ class TestRegime(unittest.TestCase):
         assert actual_kwargs == expected_kwargs
 
         # --- test info flowed properly from input_data to ExampleClassB ---
-        actual_kwargs = regime.get_keyword_arguments(regime.get_vertex(ExampleClassB))
+        actual_kwargs = regime.get_keyword_arguments(
+            regime.get_vertex(self.callables[1])
+        )
         expected_kwargs = {
             "input_data": self.data,
             "beta": BETA,
@@ -433,22 +431,24 @@ class TestRegime(unittest.TestCase):
         assert actual_kwargs == expected_kwargs
 
         # --- test info flowed properly from ExampleClassB to example_func (i.e., broadcast) ---
-        output_b = regime.graph.vs.find(callable_eq=ExampleClassB)["output"]
+        output_b = regime.graph.vs.find(callable_eq=self.callables[1])["output"]
         actual_kwargs = regime.get_keyword_arguments(regime.get_vertex(example_func))
         expected_kwargs = {"example_b": output_b}
         assert actual_kwargs == expected_kwargs
 
         # --- test info flowed properly from ExampleClassA and ExampleClassB to ExampleClassC ---
-        output_a = regime.graph.vs.find(callable_eq=ExampleClassA)["output"]
-        actual_kwargs = regime.get_keyword_arguments(regime.get_vertex(ExampleClassC))
+        output_a = regime.graph.vs.find(callable_eq=self.callables[0])["output"]
+        actual_kwargs = regime.get_keyword_arguments(
+            regime.get_vertex(self.callables[2])
+        )
         expected_kwargs = {"example_a": output_a, "example_b": output_b, "gamma": GAMMA}
         print(actual_kwargs)
         print(expected_kwargs)
         assert actual_kwargs == expected_kwargs
 
         # --- test info flowed properly from ExampleClassC to ExampleClassD ---
-        output_c = regime.graph.vs.find(callable_eq=ExampleClassC)["output"]
-        actual_kwargs = regime.get_keyword_arguments(regime.get_vertex(ExampleClassD))
+        output_c = regime.graph.vs.find(callable_eq=self.callables[2])["output"]
+        actual_kwargs = regime.get_keyword_arguments(regime.get_vertex(class_d))
         expected_kwargs = {"example_c": output_c}
         assert actual_kwargs == expected_kwargs
 
@@ -456,7 +456,7 @@ class TestRegime(unittest.TestCase):
         assert result == FINAL_RESULT
 
         # --- demonstrate plotting of the Regime ---
-        layout = regime.graph.layout("sugiyama")
+        layout = regime.graph.layout("sugiyama")  # a hierarchical layout
         visual_style = {
             "margin": 60,  # pads whitespace around the plot
             "edge_width": 2.0,

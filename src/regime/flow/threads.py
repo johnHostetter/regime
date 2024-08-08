@@ -3,6 +3,7 @@ Implements the necessary threading logic for the soft.computing.organize.SelfOrg
 """
 
 import threading
+from warnings import warn
 
 
 class ComponentThread(threading.Thread):
@@ -14,6 +15,10 @@ class ComponentThread(threading.Thread):
     """
 
     def __init__(self, function: callable, name: str = None, **kwargs):
+        warn(
+            "This class is possibly deprecated and will be removed in a future release.",
+            DeprecationWarning,
+        )
         super().__init__()
         self.function = function
         self.kwargs = kwargs
