@@ -1,4 +1,11 @@
 # regime: Workflow validation and inspection!
+<a href="https://github.com/johnHostetter/regime/actions"><img alt="Actions Status" src="https://github.com/Hostetter-Lab/PySoft/workflows/Test/badge.svg"></a>
+<a href="https://github.com/johnHostetter/regime/actions"><img alt="Actions Status" src="https://github.com/Hostetter-Lab/PySoft/workflows/Pylint/badge.svg"></a>
+<a href="https://codecov.io/github/johnHostetter/regime" > 
+ <img src="https://codecov.io/github/johnHostetter/regime/branch/main/graph/badge.svg?token=N02Z5Q7MX7"/> 
+ </a>
+<a href="https://github.com/psf/regime"><img alt="Code style: black" src="https://img.shields.io/badge/code%20style-black-000000.svg"></a>
+ 
 The `regime` library offers a precise framework to outline workflows consisting of classes, functions, and resources. The `Regime` class uses `Process` and `Resource` objects to delineate the flow of algorithms and input or output byproducts. `Process` objects, if inheriting from `HyperparameterMeta`, can explicitly "tag" hyperparameters by using the `hyperparameter` decorator; this allows for the clear separation of hyperparameters such as those found in experiments (e.g., _alpha_, _beta_) and ordinary arguments (e.g., _dataset_). 
 
 ## Special features
@@ -12,3 +19,81 @@ Incorporating `regime` into your code is straightforward and requires minimal ed
 
 ## Example Illustration of a Regime
 ![An example PNG of a Regime workflow.](https://github.com/johnHostetter/regime/blob/main/examples/test_regime.png)
+
+## Project Structure :file_folder:
+The `regime` library is structured as follows:
+```bash
+├── regime
+│   ├── __init__.py
+│   ├── utils.py
+│   ├── flow
+│   │   ├── __init__.py
+│   │   ├── components.py
+│   │   ├── threads.py
+│   │   ├── regime.py
+│   ├── nodes
+│   │   ├── __init__.py
+│   │   ├── process.py
+│   │   ├── resource.py
+│   ├── tests
+│   │   ├── regime
+│   │   │   ├── __init__.py
+│   │   │   ├── test_regime.py
+│   │   │   ├── test_component_thread.py
+│   │   │   ├── test_configuration.py
+│   │   │   ├── submodule.py
+```
+## Dependencies :link:
+### The Node Class
+The `regime` library uses the class `Node` to structure the workflow of the program. The `Node` 
+class provides an interface for code to readily interact and be managed by the `Regime` class. The 
+`Node` class is to be inherited by other classes that the user is interested in using within a 
+`Regime` object.
+```mermaid
+graph TD;
+    regime.nodes.decorators;
+    regime.nodes.meta --> regime.nodes.Node;
+    regime.utils --> regime.nodes.hyperparameters;
+    regime.nodes.hyperparameters --> regime.nodes.Node;
+```
+Note that `regime.nodes.decorators` is an isolated script from the rest of the `regime` library. It 
+is used to provide the `hyperparameter` decorator, which is used to tag hyperparameters in `Node` 
+classes/objects.
+
+Overall, most user needs are met by the `Node` class as well as the `hyperparameter` decorator. The 
+other code is meant for internal use and is not intended to be used by the user.
+
+### The Regime Class
+The `Regime` class is the central component of the `regime` library. It is responsible for managing 
+the flow of data between `Process` instances, and ensuring that the hyperparameters required by 
+each `Process` are provided. The `Regime` class is also responsible for generating the graph that 
+represents the workflow of the program. 
+
+The `Regime` class uses the following dependencies:
+```mermaid
+graph TD;
+    igraph --> id(external libraries);
+    rough-theory --> id(external libraries);
+    id(external libraries) --> regime.flow.Regime;
+    regime.nodes.Node --> regime.flow.Regime;
+    regime.nodes.hyperparameters --> regime.flow.Regime;
+    regime.flow.threads --> regime.flow.Regime;
+    regime.flow.components --> regime.flow.Regime;
+    regime.nodes.hyperparameters --> regime.flow.Regime;
+```
+The `Regime` inherits from a `rough-theory` class to provide additional features for analyzing 
+workflows (advanced use cases such as quantifying discernibility). The `Regime` class also uses 
+the `igraph` library to generate the graph (accessed via `rough-theory`'s class) that represents 
+the workflow of the program. Since a `Regime` object contains a `igraph.Graph` object, the `Regime`
+can be readily visualized by using the `igraph` library.
+
+### Processes and Resources
+The `Process` and `Resource` are `namedtuples` used to ensure that callables 
+(e.g., functions, Nodes) and resources (e.g., files, directories, data) are properly managed by the
+`Regime` by providing a consistent interface.
+
+It is often expected that a `Node` class _will produce_ a `Resource` object as output. This
+`Resource` object can then be used as input for another `Node` class. To ensure proper flow of 
+resources, the `resource_name` is used to identify these resources and should be unique for each 
+object inheriting from the `Node` class (or in general, any object that produces a `Resource` 
+object).

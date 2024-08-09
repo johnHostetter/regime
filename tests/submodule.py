@@ -4,17 +4,13 @@ Contains a class that is used to test the RegimeMeta class and hyperparameter de
 
 import torch
 
-from regime.utils import RegimeMeta, hyperparameter
+from regime import Node, hyperparameter
 
 
-class ExampleClassB(RegimeMeta):
+class ExampleClassB(Node):  # pylint: disable=too-few-public-methods
     """
     Example class B that uses the RegimeMeta metaclass.
     """
-
-    @staticmethod
-    def resource_name() -> str:
-        return "example_b"
 
     @hyperparameter("beta")
     def __call__(

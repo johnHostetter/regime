@@ -1,0 +1,9 @@
+tests:
+  submodule:
+    ExampleClassB:
+      beta: 0.3
+  test_regime:
+    ExampleClassA:
+      alpha: 0.1
+    ExampleClassC:
+      gamma: 0.7

@@ -4,7 +4,7 @@ Test the ComponentThread class.
 
 import unittest
 
-from regime.threads import ComponentThread
+from regime.flow.threads import ComponentThread
 
 
 class TestComponentThread(unittest.TestCase):
