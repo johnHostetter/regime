@@ -4,6 +4,7 @@ in a thread-safe manner. It is used to manage the flow of data between processes
 """
 
 import unittest
+from pathlib import Path
 from typing import Union, Dict, Any
 
 import yaml
@@ -88,7 +89,9 @@ class TestRegime(unittest.TestCase):
             example_func,
         ]  # either a function or a Node object are allowed
         self.data = torch.zeros(10, 2)
-        with open("test_configuration.yaml", "r", encoding="utf8") as file:
+        with open(
+            Path(__file__).parent / "test_configuration.yaml", "r", encoding="utf8"
+        ) as file:
             self.config = yaml.safe_load(file)
 
     def test_invalid_regime(self) -> None:
