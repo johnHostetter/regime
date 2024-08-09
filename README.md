@@ -23,25 +23,27 @@ Incorporating `regime` into your code is straightforward and requires minimal ed
 ## Project Structure :file_folder:
 The `regime` library is structured as follows:
 ```bash
+src
 ├── regime
 │   ├── __init__.py
-│   ├── utils.py
+│   ├── utils.py (misc. generic utils)
 │   ├── flow
 │   │   ├── __init__.py
-│   │   ├── components.py
-│   │   ├── threads.py
-│   │   ├── regime.py
+│   │   ├── components.py (Process and Resource namedtuples)
+│   │   ├── threads.py (ComponentThread class)
+│   │   ├── impl.py (Regime class)
 │   ├── nodes
 │   │   ├── __init__.py
-│   │   ├── process.py
-│   │   ├── resource.py
-│   ├── tests
-│   │   ├── regime
-│   │   │   ├── __init__.py
-│   │   │   ├── test_regime.py
-│   │   │   ├── test_component_thread.py
-│   │   │   ├── test_configuration.py
-│   │   │   ├── submodule.py
+│   │   ├── decorators.py (hyperparameter decorator)
+│   │   ├── hyperparameters.py (make_hyperparameters_dict function)
+│   │   ├── impl.py (Node class)
+│   │   ├── meta.py (HyperparameterMeta class)
+├── tests
+│   ├── __init__.py
+│   ├── test_regime.py
+│   ├── test_component_thread.py
+│   ├── test_configuration.py
+│   ├── submodule.py
 ```
 ## Dependencies :link:
 ### The Node Class
@@ -52,9 +54,9 @@ class provides an interface for code to readily interact and be managed by the `
 ```mermaid
 graph TD;
     regime.nodes.decorators;
-    regime.nodes.meta --> regime.nodes.Node;
+    regime.nodes.meta --> regime.nodes.impl.Node;
     regime.utils --> regime.nodes.hyperparameters;
-    regime.nodes.hyperparameters --> regime.nodes.Node;
+    regime.nodes.hyperparameters --> regime.nodes.impl.Node;
 ```
 Note that `regime.nodes.decorators` is an isolated script from the rest of the `regime` library. It 
 is used to provide the `hyperparameter` decorator, which is used to tag hyperparameters in `Node` 
@@ -74,12 +76,12 @@ The `Regime` class uses the following dependencies:
 graph TD;
     igraph --> id(external libraries);
     rough-theory --> id(external libraries);
-    id(external libraries) --> regime.flow.Regime;
-    regime.nodes.Node --> regime.flow.Regime;
-    regime.nodes.hyperparameters --> regime.flow.Regime;
-    regime.flow.threads --> regime.flow.Regime;
-    regime.flow.components --> regime.flow.Regime;
-    regime.nodes.hyperparameters --> regime.flow.Regime;
+    id(external libraries) --> regime.flow.impl.Regime;
+    regime.nodes.impl.Node --> regime.flow.impl.Regime;
+    regime.nodes.hyperparameters --> regime.flow.impl.Regime;
+    regime.flow.threads --> regime.flow.impl.Regime;
+    regime.flow.components --> regime.flow.impl.Regime;
+    regime.nodes.hyperparameters --> regime.flow.impl.Regime;
 ```
 The `Regime` inherits from a `rough-theory` class to provide additional features for analyzing 
 workflows (advanced use cases such as quantifying discernibility). The `Regime` class also uses 
