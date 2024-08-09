@@ -11,7 +11,7 @@ import torch
 import igraph as ig
 
 from regime import Regime, Resource, Node, hyperparameter
-from tests.regime.submodule import (
+from tests.submodule import (
     ExampleClassB,
 )  # class located here to showcase hierarchy
 
@@ -132,7 +132,7 @@ class TestRegime(unittest.TestCase):
         # value None means that the hyperparameter is not set
         assert regime.required_hyperparameters == {
             # follows the project structure
-            "tests": {"regime": {"submodule": {"ExampleClassB": {"beta": None}}}},
+            "tests": {"submodule": {"ExampleClassB": {"beta": None}}},
             "test_regime": {
                 "ExampleClassC": {"gamma": None},
                 "ExampleClassA": {"alpha": None},
@@ -153,7 +153,7 @@ class TestRegime(unittest.TestCase):
         )
         assert defined_hyperparameters == {
             # follows the project structure
-            "tests": {"regime": {"submodule": {"ExampleClassB": {"beta": BETA}}}},
+            "tests": {"submodule": {"ExampleClassB": {"beta": BETA}}},
             "test_regime": {
                 "ExampleClassC": {"gamma": GAMMA},
                 "ExampleClassA": {"alpha": ALPHA},

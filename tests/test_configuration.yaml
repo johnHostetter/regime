@@ -4,7 +4,6 @@ test_regime:
   ExampleClassC:
     gamma: 0.7
 tests:
-  regime:
-    submodule:
-      ExampleClassB:
-        beta: 0.3
+  submodule:
+    ExampleClassB:
+      beta: 0.3
