@@ -342,12 +342,8 @@ class Regime(
                     name=vertex_reference, value=None
                 )  # no value yet
                 self.add_resources(resources={new_resource})
-            try:
-                vertex: igraph.Vertex = self.graph.vs.find(name_eq=vertex_reference)
-            except ValueError as e:
-                raise ValueError(
-                    f"Vertex {vertex_reference} does not exist in the Regime graph."
-                ) from e
+            # the vertex must exist now
+            vertex: igraph.Vertex = self.graph.vs.find(name_eq=vertex_reference)
         else:  # find the vertex by callable, most likely process
             try:
                 vertex: igraph.Vertex = self.graph.vs.find(callable_eq=vertex_reference)

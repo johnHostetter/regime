@@ -1,4 +1,4 @@
-# regime: Workflow validation and inspection!
+# regime: Workflow validation and inspection! :mag_right:
 <a href="https://github.com/johnHostetter/regime/actions"><img alt="Actions Status" src="https://github.com/Hostetter-Lab/PySoft/workflows/Test/badge.svg"></a>
 <a href="https://github.com/johnHostetter/regime/actions"><img alt="Actions Status" src="https://github.com/Hostetter-Lab/PySoft/workflows/Pylint/badge.svg"></a>
 <a href="https://codecov.io/github/johnHostetter/regime" > 
@@ -8,7 +8,7 @@
  
 The `regime` library offers a precise framework to outline workflows consisting of classes, functions, and resources. The `Regime` class uses `Process` and `Resource` objects to delineate the flow of algorithms and input or output byproducts. `Process` objects, if inheriting from `HyperparameterMeta`, can explicitly "tag" hyperparameters by using the `hyperparameter` decorator; this allows for the clear separation of hyperparameters such as those found in experiments (e.g., _alpha_, _beta_) and ordinary arguments (e.g., _dataset_). 
 
-## Special features
+## Special features :high_brightness:
 1. *Hyperparameter Recognition*: We can always automatically determine what are the hyperparameters from a `Process` signature. In doing so, this allows us to know which arguments we can safely explore other values.
 2. *Hyperparameter Validation*: Keeping up with hyperparameters for many processes can quickly become cumbersome - especially in complex workflows. To address this - `Regime` determines what hyperparameters must be defined to use the required `Process` objects, and checks that these are provided via a `dict` instance. This `dict` follows a hierarchical structure that comes directly from Python modules' paths to ensure that hyperparameters remain unique and their purpose known (i.e., they are nested according to the exact location they are found).
 3. *Hyperparameter Logging*: Often, hyperparameters require _fine-tuning_, and after an experiment is performed - if the results are ideal, we wish to store these values for later reuse. The hyperparameters used for a `Regime` object can easily be exported as .yaml files.
@@ -17,31 +17,33 @@ The `regime` library offers a precise framework to outline workflows consisting 
 
 Incorporating `regime` into your code is straightforward and requires minimal edits! 
 
-## Example Illustration of a Regime
+## Example Illustration of a Regime :camera:
 ![An example PNG of a Regime workflow.](https://github.com/johnHostetter/regime/blob/main/examples/test_regime.png)
 
 ## Project Structure :file_folder:
 The `regime` library is structured as follows:
 ```bash
+src
 ├── regime
 │   ├── __init__.py
-│   ├── utils.py
+│   ├── utils.py (misc. generic utils)
 │   ├── flow
 │   │   ├── __init__.py
-│   │   ├── components.py
-│   │   ├── threads.py
-│   │   ├── regime.py
+│   │   ├── components.py (Process and Resource namedtuples)
+│   │   ├── threads.py (ComponentThread class)
+│   │   ├── impl.py (Regime class)
 │   ├── nodes
 │   │   ├── __init__.py
-│   │   ├── process.py
-│   │   ├── resource.py
-│   ├── tests
-│   │   ├── regime
-│   │   │   ├── __init__.py
-│   │   │   ├── test_regime.py
-│   │   │   ├── test_component_thread.py
-│   │   │   ├── test_configuration.py
-│   │   │   ├── submodule.py
+│   │   ├── decorators.py (hyperparameter decorator)
+│   │   ├── hyperparameters.py (make_hyperparameters_dict function)
+│   │   ├── impl.py (Node class)
+│   │   ├── meta.py (HyperparameterMeta class)
+├── tests
+│   ├── __init__.py
+│   ├── test_regime.py
+│   ├── test_component_thread.py
+│   ├── test_configuration.py
+│   ├── submodule.py
 ```
 ## Dependencies :link:
 ### The Node Class
@@ -52,9 +54,9 @@ class provides an interface for code to readily interact and be managed by the `
 ```mermaid
 graph TD;
     regime.nodes.decorators;
-    regime.nodes.meta --> regime.nodes.Node;
+    regime.nodes.meta --> regime.nodes.impl.Node;
+    regime.nodes.impl.Node --> regime.nodes.hyperparameters;
     regime.utils --> regime.nodes.hyperparameters;
-    regime.nodes.hyperparameters --> regime.nodes.Node;
 ```
 Note that `regime.nodes.decorators` is an isolated script from the rest of the `regime` library. It 
 is used to provide the `hyperparameter` decorator, which is used to tag hyperparameters in `Node` 
@@ -74,12 +76,12 @@ The `Regime` class uses the following dependencies:
 graph TD;
     igraph --> id(external libraries);
     rough-theory --> id(external libraries);
-    id(external libraries) --> regime.flow.Regime;
-    regime.nodes.Node --> regime.flow.Regime;
-    regime.nodes.hyperparameters --> regime.flow.Regime;
-    regime.flow.threads --> regime.flow.Regime;
-    regime.flow.components --> regime.flow.Regime;
-    regime.nodes.hyperparameters --> regime.flow.Regime;
+    id(external libraries) --> regime.flow.impl.Regime;
+    regime.nodes.impl.Node --> regime.flow.impl.Regime;
+    regime.nodes.hyperparameters --> regime.flow.impl.Regime;
+    regime.flow.threads --> regime.flow.impl.Regime;
+    regime.flow.components --> regime.flow.impl.Regime;
+    regime.nodes.hyperparameters --> regime.flow.impl.Regime;
 ```
 The `Regime` inherits from a `rough-theory` class to provide additional features for analyzing 
 workflows (advanced use cases such as quantifying discernibility). The `Regime` class also uses 

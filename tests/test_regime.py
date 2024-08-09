@@ -120,6 +120,22 @@ class TestRegime(unittest.TestCase):
         assert len(regime.graph.vs) == 1  # for the 1 callable
         assert len(regime.graph.es) == 0
 
+    def test_add_callable_with_duplicate_resource_name(self) -> None:
+        """
+        We can add a single callable with a resource.
+
+        Returns:
+            None
+        """
+        regime = Regime(
+            callables={lambda x: x}, resources={Resource(name="input", value=1)}
+        )
+        assert len(regime.graph.vs) == 2
+        # the issue here is that the resource name is duplicated, which is not allowed
+        self.assertRaises(
+            ValueError, regime.add_resources, {Resource(name="input", value=2)}
+        )
+
     def test_add_callables(self) -> None:
         """
         We can add an iterable collection of callable objects (e.g., functions, classes).
@@ -192,6 +208,8 @@ class TestRegime(unittest.TestCase):
         edges = [
             (ExampleClassC, ExampleClassD, 0),
         ]
+        # test non-existent callable vertices raise a ValueError
+        # Vertex <class 'tests.test_regime.ExampleClassC'> does not exist in the Regime graph.
         self.assertRaises(ValueError, regime.define_flow, edges)
 
     def test_with_functions_that_make_no_progress(self) -> None:
