@@ -4,7 +4,7 @@ All functions related managing hyperparameters are defined here (except for Hype
 
 from typing import Dict
 
-from regime.nodes import Node
+from regime.nodes.impl import Node
 from regime.utils import module_path_to_dict
 
 

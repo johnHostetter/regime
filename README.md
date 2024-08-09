@@ -55,8 +55,8 @@ class provides an interface for code to readily interact and be managed by the `
 graph TD;
     regime.nodes.decorators;
     regime.nodes.meta --> regime.nodes.impl.Node;
+    regime.nodes.impl.Node --> regime.nodes.hyperparameters;
     regime.utils --> regime.nodes.hyperparameters;
-    regime.nodes.hyperparameters --> regime.nodes.impl.Node;
 ```
 Note that `regime.nodes.decorators` is an isolated script from the rest of the `regime` library. It 
 is used to provide the `hyperparameter` decorator, which is used to tag hyperparameters in `Node` 
