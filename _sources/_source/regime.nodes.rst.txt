@@ -20,18 +20,18 @@ regime.nodes.hyperparameters module
    :undoc-members:
    :show-inheritance:
 
-regime.nodes.meta module
+regime.nodes.impl module
 ------------------------
 
-.. automodule:: regime.nodes.meta
+.. automodule:: regime.nodes.impl
    :members:
    :undoc-members:
    :show-inheritance:
 
-regime.nodes.nodes module
--------------------------
+regime.nodes.meta module
+------------------------
 
-.. automodule:: regime.nodes.nodes
+.. automodule:: regime.nodes.meta
    :members:
    :undoc-members:
    :show-inheritance:
