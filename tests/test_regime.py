@@ -23,7 +23,7 @@ BETA: float = 0.3
 GAMMA: float = 0.7
 FINAL_VALUE: int = 2025
 FINAL_RESULT: Dict[str, Union[str, int]] = {
-    "test_regime.example_func": str(BETA),
+    "tests.test_regime.example_func": str(BETA),
     "example_d": FINAL_VALUE,
 }
 
@@ -135,11 +135,13 @@ class TestRegime(unittest.TestCase):
         # value None means that the hyperparameter is not set
         assert regime.required_hyperparameters == {
             # follows the project structure
-            "tests": {"submodule": {"ExampleClassB": {"beta": None}}},
-            "test_regime": {
-                "ExampleClassC": {"gamma": None},
-                "ExampleClassA": {"alpha": None},
-            },
+            "tests": {
+                "submodule": {"ExampleClassB": {"beta": None}},
+                "test_regime": {
+                    "ExampleClassC": {"gamma": None},
+                    "ExampleClassA": {"alpha": None},
+                },
+            }
         }  # the configuration file passed to Regime MUST contain the above hyperparameters
 
     def test_load_hyperparameters(self) -> None:
@@ -156,11 +158,13 @@ class TestRegime(unittest.TestCase):
         )
         assert defined_hyperparameters == {
             # follows the project structure
-            "tests": {"submodule": {"ExampleClassB": {"beta": BETA}}},
-            "test_regime": {
-                "ExampleClassC": {"gamma": GAMMA},
-                "ExampleClassA": {"alpha": ALPHA},
-            },
+            "tests": {
+                "submodule": {"ExampleClassB": {"beta": BETA}},
+                "test_regime": {
+                    "ExampleClassC": {"gamma": GAMMA},
+                    "ExampleClassA": {"alpha": ALPHA},
+                },
+            }
         }  # the configuration file passed to Regime MUST contain the above hyperparameters
 
     def test_add_edges(self) -> None:
@@ -238,7 +242,7 @@ class TestRegime(unittest.TestCase):
         assert len(regime.graph.vs) == num_of_vertices
         assert len(regime.graph.es) == num_of_edges
         assert regime.start() == {
-            "test_regime.wait_for_no_progress": None
+            "tests.test_regime.wait_for_no_progress": None
         }  # do nothing
 
     def test_add_invalid_source_vertex(self) -> None:
@@ -471,9 +475,10 @@ class TestRegime(unittest.TestCase):
         pretty_names = [name.split(".")[-1] for name in regime.graph.vs["name"]]
         regime.graph.vs["label"] = pretty_names
         for file_extension in ["png", "pdf"]:
+            # save the plot as a PNG and PDF file
             ig.plot(
                 regime.graph,
-                target=f"test_regime.{file_extension}",  # save the plot as a PNG and PDF
+                target=str(Path(__file__).parent / f"test_regime.{file_extension}"),
                 layout=layout,  # specify the layout of the vertices
                 autocurve=True,  # curved edges
                 **visual_style,  # apply the visual style
