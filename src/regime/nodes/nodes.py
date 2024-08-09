@@ -22,7 +22,10 @@ class Node(metaclass=HyperparameterMeta):
 
     @abstractmethod
     def __call__(self, *args, **kwargs):
-        raise NotImplementedError("__call__ must be implemented in the subclass.")
+        """
+        The __call__ method is the entry point for the algorithm. It should be overridden by the
+        subclass to provide the algorithm's behavior.
+        """
 
     @classmethod
     def hyperparameters(cls):
