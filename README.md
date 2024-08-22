@@ -1,9 +1,7 @@
 # regime: Workflow validation and inspection! :mag_right:
 <a href="https://github.com/johnHostetter/regime/actions"><img alt="Actions Status" src="https://github.com/Hostetter-Lab/PySoft/workflows/Test/badge.svg"></a>
 <a href="https://github.com/johnHostetter/regime/actions"><img alt="Actions Status" src="https://github.com/Hostetter-Lab/PySoft/workflows/Pylint/badge.svg"></a>
-<a href="https://codecov.io/github/johnHostetter/regime" > 
- <img src="https://codecov.io/github/johnHostetter/regime/branch/main/graph/badge.svg?token=N02Z5Q7MX7"/> 
- </a>
+<a href="https://codecov.io/github/johnHostetter/regime"><img src="https://codecov.io/github/johnHostetter/regime/branch/main/graph/badge.svg?token=N02Z5Q7MX7"/></a>
 <a href="https://github.com/psf/regime"><img alt="Code style: black" src="https://img.shields.io/badge/code%20style-black-000000.svg"></a>
  
 The `regime` library offers a precise framework to outline workflows consisting of classes, functions, and resources. The `Regime` class uses `Process` and `Resource` objects to delineate the flow of algorithms and input or output byproducts. `Process` objects, if inheriting from `HyperparameterMeta`, can explicitly "tag" hyperparameters by using the `hyperparameter` decorator; this allows for the clear separation of hyperparameters such as those found in experiments (e.g., _alpha_, _beta_) and ordinary arguments (e.g., _dataset_). 
