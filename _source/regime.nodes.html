@@ -111,30 +111,6 @@ hyperparameters in a class, so easier configuration management can occur.</p>
 </dd></dl>
 
 </section>
-<section id="module-regime.nodes.hyperparameters">
-<span id="regime-nodes-hyperparameters-module"></span><h2>regime.nodes.hyperparameters module<a class="headerlink" href="#module-regime.nodes.hyperparameters" title="Link to this heading"></a></h2>
-<p>All functions related managing hyperparameters are defined here (except for HyperparameterMeta).</p>
-<dl class="py function">
-<dt class="sig sig-object py" id="regime.nodes.hyperparameters.make_hyperparameters_dict">
-<span class="sig-prename descclassname"><span class="pre">regime.nodes.hyperparameters.</span></span><span class="sig-name descname"><span class="pre">make_hyperparameters_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#regime.nodes.impl.Node" title="regime.nodes.impl.Node"><span class="pre">Node</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_hyperparameters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#regime.nodes.hyperparameters.make_hyperparameters_dict" title="Link to this definition"></a></dt>
-<dd><p>Generate a nested dictionary of hyperparameters for the given class (including class name).
-Whether to include the hyperparameters themselves is optional, but the class name is always
-included; default is to include hyperparameters.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>cls</strong> – The Python class to generate the hyperparameters dictionary for.</p></li>
-<li><p><strong>include_hyperparameters</strong> – Whether to include the hyperparameters themselves in</p></li>
-<li><p><strong>dictionary.</strong> (<em>the</em>)</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A nested dictionary of the class name and its hyperparameters.</p>
-</dd>
-</dl>
-</dd></dl>
-
-</section>
 <section id="module-regime.nodes.impl">
 <span id="regime-nodes-impl-module"></span><h2>regime.nodes.impl module<a class="headerlink" href="#module-regime.nodes.impl" title="Link to this heading"></a></h2>
 <p>Define the Node class, which is the base class for all Regime compatible objects.</p>
@@ -191,6 +167,25 @@ target’s __call__ method.</p>
 <dt class="sig sig-object py" id="regime.nodes.impl.Node.hyperparameters">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">hyperparameters</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#regime.nodes.impl.Node.hyperparameters" title="Link to this definition"></a></dt>
 <dd><p>Get the hyperparameters of the class.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="regime.nodes.impl.Node.make_hyperparameters_dict">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">make_hyperparameters_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">include_hyperparameters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#regime.nodes.impl.Node.make_hyperparameters_dict" title="Link to this definition"></a></dt>
+<dd><p>Generate a nested dictionary of hyperparameters for the given class (including class name).
+Whether to include the hyperparameters themselves is optional, but the class name is always
+included; default is to include hyperparameters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>include_hyperparameters</strong> – Whether to include the hyperparameters themselves in</p></li>
+<li><p><strong>dictionary.</strong> (<em>the</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A nested dictionary of the class name and its hyperparameters.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -291,6 +286,25 @@ target’s __call__ method.</p>
 <dt class="sig sig-object py" id="regime.nodes.Node.hyperparameters">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">hyperparameters</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#regime.nodes.Node.hyperparameters" title="Link to this definition"></a></dt>
 <dd><p>Get the hyperparameters of the class.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="regime.nodes.Node.make_hyperparameters_dict">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">make_hyperparameters_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">include_hyperparameters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#regime.nodes.Node.make_hyperparameters_dict" title="Link to this definition"></a></dt>
+<dd><p>Generate a nested dictionary of hyperparameters for the given class (including class name).
+Whether to include the hyperparameters themselves is optional, but the class name is always
+included; default is to include hyperparameters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>include_hyperparameters</strong> – Whether to include the hyperparameters themselves in</p></li>
+<li><p><strong>dictionary.</strong> (<em>the</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A nested dictionary of the class name and its hyperparameters.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">

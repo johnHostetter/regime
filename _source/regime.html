@@ -185,16 +185,13 @@
 <li class="toctree-l3"><a class="reference internal" href="regime.nodes.html#regime.nodes.decorators.hyperparameter"><code class="docutils literal notranslate"><span class="pre">hyperparameter()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="regime.nodes.html#module-regime.nodes.hyperparameters">regime.nodes.hyperparameters module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="regime.nodes.html#regime.nodes.hyperparameters.make_hyperparameters_dict"><code class="docutils literal notranslate"><span class="pre">make_hyperparameters_dict()</span></code></a></li>
-</ul>
-</li>
 <li class="toctree-l2"><a class="reference internal" href="regime.nodes.html#module-regime.nodes.impl">regime.nodes.impl module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="regime.nodes.html#regime.nodes.impl.Node"><code class="docutils literal notranslate"><span class="pre">Node</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="regime.nodes.html#regime.nodes.impl.Node.arg_only_edges"><code class="docutils literal notranslate"><span class="pre">Node.arg_only_edges()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="regime.nodes.html#regime.nodes.impl.Node.edges"><code class="docutils literal notranslate"><span class="pre">Node.edges()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="regime.nodes.html#regime.nodes.impl.Node.hyperparameter_edges"><code class="docutils literal notranslate"><span class="pre">Node.hyperparameter_edges()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="regime.nodes.html#regime.nodes.impl.Node.hyperparameters"><code class="docutils literal notranslate"><span class="pre">Node.hyperparameters()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="regime.nodes.html#regime.nodes.impl.Node.make_hyperparameters_dict"><code class="docutils literal notranslate"><span class="pre">Node.make_hyperparameters_dict()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="regime.nodes.html#regime.nodes.impl.Node.source_edges"><code class="docutils literal notranslate"><span class="pre">Node.source_edges()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="regime.nodes.html#regime.nodes.impl.Node.target_edges"><code class="docutils literal notranslate"><span class="pre">Node.target_edges()</span></code></a></li>
 </ul>
@@ -211,6 +208,7 @@
 <li class="toctree-l4"><a class="reference internal" href="regime.nodes.html#regime.nodes.Node.edges"><code class="docutils literal notranslate"><span class="pre">Node.edges()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="regime.nodes.html#regime.nodes.Node.hyperparameter_edges"><code class="docutils literal notranslate"><span class="pre">Node.hyperparameter_edges()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="regime.nodes.html#regime.nodes.Node.hyperparameters"><code class="docutils literal notranslate"><span class="pre">Node.hyperparameters()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="regime.nodes.html#regime.nodes.Node.make_hyperparameters_dict"><code class="docutils literal notranslate"><span class="pre">Node.make_hyperparameters_dict()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="regime.nodes.html#regime.nodes.Node.source_edges"><code class="docutils literal notranslate"><span class="pre">Node.source_edges()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="regime.nodes.html#regime.nodes.Node.target_edges"><code class="docutils literal notranslate"><span class="pre">Node.target_edges()</span></code></a></li>
 </ul>
@@ -320,6 +318,25 @@ target’s __call__ method.</p>
 <dt class="sig sig-object py" id="regime.Node.hyperparameters">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">hyperparameters</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#regime.Node.hyperparameters" title="Link to this definition"></a></dt>
 <dd><p>Get the hyperparameters of the class.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="regime.Node.make_hyperparameters_dict">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">make_hyperparameters_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">include_hyperparameters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#regime.Node.make_hyperparameters_dict" title="Link to this definition"></a></dt>
+<dd><p>Generate a nested dictionary of hyperparameters for the given class (including class name).
+Whether to include the hyperparameters themselves is optional, but the class name is always
+included; default is to include hyperparameters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>include_hyperparameters</strong> – Whether to include the hyperparameters themselves in</p></li>
+<li><p><strong>dictionary.</strong> (<em>the</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A nested dictionary of the class name and its hyperparameters.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
