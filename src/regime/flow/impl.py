@@ -12,7 +12,6 @@ from regime.nodes import Node
 from regime.utils import merge_dicts
 from regime.flow.threads import ComponentThread
 from regime.flow.components import Process, Resource
-from regime.nodes.hyperparameters import make_hyperparameters_dict
 
 
 class Regime(
@@ -115,7 +114,7 @@ class Regime(
                     # find the hyperparameters required to be specified in configuration settings
                     required_hyperparameters = merge_dicts(
                         existing=required_hyperparameters,
-                        new=make_hyperparameters_dict(type(_callable)),
+                        new=_callable.make_hyperparameters_dict(),
                     )
                 else:  # if not a Node OBJECT, then it must be a function
                     name: str = f"{_callable.__module__}.{_callable.__name__}"

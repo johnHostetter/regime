@@ -33,7 +33,6 @@ src
 │   ├── nodes
 │   │   ├── __init__.py
 │   │   ├── decorators.py (hyperparameter decorator)
-│   │   ├── hyperparameters.py (make_hyperparameters_dict function)
 │   │   ├── impl.py (Node class)
 │   │   ├── meta.py (HyperparameterMeta class)
 ├── tests
@@ -52,9 +51,8 @@ class provides an interface for code to readily interact and be managed by the `
 ```mermaid
 graph TD;
     regime.nodes.decorators;
+    regime.utils --> regime.nodes.impl.Node;
     regime.nodes.meta --> regime.nodes.impl.Node;
-    regime.nodes.impl.Node --> regime.nodes.hyperparameters;
-    regime.utils --> regime.nodes.hyperparameters;
 ```
 Note that `regime.nodes.decorators` is an isolated script from the rest of the `regime` library. It 
 is used to provide the `hyperparameter` decorator, which is used to tag hyperparameters in `Node` 
@@ -75,11 +73,10 @@ graph TD;
     igraph --> id(external libraries);
     rough-theory --> id(external libraries);
     id(external libraries) --> regime.flow.impl.Regime;
+    regime.utils --> regime.flow.impl.Regime;
     regime.nodes.impl.Node --> regime.flow.impl.Regime;
-    regime.nodes.hyperparameters --> regime.flow.impl.Regime;
     regime.flow.threads --> regime.flow.impl.Regime;
     regime.flow.components --> regime.flow.impl.Regime;
-    regime.nodes.hyperparameters --> regime.flow.impl.Regime;
 ```
 The `Regime` inherits from a `rough-theory` class to provide additional features for analyzing 
 workflows (advanced use cases such as quantifying discernibility). The `Regime` class also uses 

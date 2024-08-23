@@ -4,8 +4,9 @@ Define the Node class, which is the base class for all Regime compatible objects
 
 import inspect
 from abc import abstractmethod
-from typing import List, Tuple, Any
+from typing import List, Tuple, Any, Dict
 
+from regime.utils import module_path_to_dict
 from regime.nodes.meta import HyperparameterMeta
 
 
@@ -34,6 +35,31 @@ class Node(metaclass=HyperparameterMeta):
         """
         # provide a front-facing method to access the private member hyperparameters
         return cls._hyperparameters
+
+    @classmethod
+    def make_hyperparameters_dict(cls, include_hyperparameters=True) -> dict:
+        """
+        Generate a nested dictionary of hyperparameters for the given class (including class name).
+        Whether to include the hyperparameters themselves is optional, but the class name is always
+        included; default is to include hyperparameters.
+
+        Args:
+            include_hyperparameters: Whether to include the hyperparameters themselves in
+            the dictionary.
+
+        Returns:
+            A nested dictionary of the class name and its hyperparameters.
+        """
+        hyperparameters: Dict = {}
+        if include_hyperparameters:
+            hyperparameters: Dict[str, None] = cls.hyperparameters()
+
+        if len(hyperparameters) == 0:
+            return {}  # no hyperparameters to include
+        return module_path_to_dict(
+            cls.__module__,
+            callback=lambda current: current.update({cls.__name__: hyperparameters}),
+        )
 
     def edges(self) -> List[Tuple[Any, Any, int]]:
         """
