@@ -40,9 +40,11 @@ class TestComponentThread(unittest.TestCase):
         thread = ComponentThread(function=self.return_function_not_implemented_error)
         # no exception should be stored in the thread yet
         self.assertTrue(thread.exception is None)
-        # thread will raise an exception when run, but it will be caught and stored in the thread
+        # thread will raise an exception when run, but it will be caught and
+        # stored in the thread
         thread.run()
-        # a function that raises an Exception will be caught and stored in the thread
+        # a function that raises an Exception will be caught and stored in the
+        # thread
         self.assertTrue(isinstance(thread.exception, NotImplementedError))
         thread.start()  # this will store an exception, but we can re-raise it by calling join
         self.assertRaises(NotImplementedError, thread.join)

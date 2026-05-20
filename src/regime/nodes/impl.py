@@ -4,10 +4,10 @@ Define the Node class, which is the base class for all Regime compatible objects
 
 import inspect
 from abc import abstractmethod
-from typing import List, Tuple, Any, Dict
+from typing import Any, Dict, List, Tuple
 
-from regime.utils import module_path_to_dict
 from regime.nodes.meta import HyperparameterMeta
+from regime.utils import module_path_to_dict
 
 
 class Node(metaclass=HyperparameterMeta):
@@ -33,7 +33,8 @@ class Node(metaclass=HyperparameterMeta):
         """
         Get the hyperparameters of the class.
         """
-        # provide a front-facing method to access the private member hyperparameters
+        # provide a front-facing method to access the private member
+        # hyperparameters
         return cls._hyperparameters
 
     @classmethod
@@ -78,7 +79,8 @@ class Node(metaclass=HyperparameterMeta):
     # for code reuse, the following methods are broken down into smaller methods
     # often, in more complicated Regimes, the source_edges and target_edges methods
     # will be overridden to provide more specific behavior (e.g., different training data)
-    # or their target destinations will have to be overridden to provide more specific behavior
+    # or their target destinations will have to be overridden to provide more
+    # specific behavior
 
     def source_edges(self) -> List[Tuple[Any, Any, int]]:
         """

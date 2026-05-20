@@ -5,18 +5,17 @@ in a thread-safe manner. It is used to manage the flow of data between processes
 
 import unittest
 from pathlib import Path
-from typing import Union, Dict, Any
+from typing import Any, Dict, Union
 
-import yaml
-import torch
 import igraph as ig
+import torch
+import yaml
+from tests.submodule import ExampleClassB  # class located here to showcase hierarchy
 
-from regime import Regime, Resource, Node, hyperparameter
-from tests.submodule import (
-    ExampleClassB,
-)  # class located here to showcase hierarchy
+from regime import Node, Regime, Resource, hyperparameter
 
-AVAILABLE_DEVICE = torch.device("cpu")  # CUDA out of memory error for these tests
+# CUDA out of memory error for these tests
+AVAILABLE_DEVICE = torch.device("cpu")
 # constant values used for testing
 ALPHA: float = 0.1
 BETA: float = 0.3
@@ -103,10 +102,12 @@ class TestRegime(unittest.TestCase):
         Returns:
             None
         """
-        # trying to create Regime without any functions should raise a ValueError
+        # trying to create Regime without any functions should raise a
+        # ValueError
         self.assertRaises(ValueError, Regime, callables={})
 
-        # trying to create Regime with a non-callable object should raise a ValueError
+        # trying to create Regime with a non-callable object should raise a
+        # ValueError
         self.assertRaises(ValueError, Regime, callables={1})
 
     def test_add_callable(self) -> None:
@@ -131,7 +132,8 @@ class TestRegime(unittest.TestCase):
             callables={lambda x: x}, resources={Resource(name="input", value=1)}
         )
         assert len(regime.graph.vs) == 2
-        # the issue here is that the resource name is duplicated, which is not allowed
+        # the issue here is that the resource name is duplicated, which is not
+        # allowed
         self.assertRaises(
             ValueError, regime.add_resources, {Resource(name="input", value=2)}
         )
@@ -145,7 +147,8 @@ class TestRegime(unittest.TestCase):
         """
         regime = Regime(callables=self.callables)
         assert len(regime.graph.vs) == len(self.callables)
-        assert len(regime.graph.es) == 0  # we have not linked the functions yet
+        # we have not linked the functions yet
+        assert len(regime.graph.es) == 0
         # check that the required hyperparameters are as expected for the given callables
         # (i.e., the callables that have the 'hyperparameters' attribute)
         # value None means that the hyperparameter is not set
@@ -209,7 +212,8 @@ class TestRegime(unittest.TestCase):
             (ExampleClassC, ExampleClassD, 0),
         ]
         # test non-existent callable vertices raise a ValueError
-        # Vertex <class 'tests.test_regime.ExampleClassC'> does not exist in the Regime graph.
+        # Vertex <class 'tests.test_regime.ExampleClassC'> does not exist in
+        # the Regime graph.
         self.assertRaises(ValueError, regime.define_flow, edges)
 
     def test_with_functions_that_make_no_progress(self) -> None:
@@ -280,7 +284,8 @@ class TestRegime(unittest.TestCase):
             (ExampleClassA, ExampleClassC, 1),
             ("gamma", ExampleClassC, 2),
         ]
-        # assert regime.link_functions(edges) throws a ValueError because of the None vertex
+        # assert regime.link_functions(edges) throws a ValueError because of
+        # the None vertex
         self.assertRaises(ValueError, regime.define_flow, edges)
         # assert regime.link_functions(edges) throws a ValueError because it is missing the
         # ExampleClassA in its 'functions' argument
@@ -303,7 +308,8 @@ class TestRegime(unittest.TestCase):
             (ExampleClassB, ExampleClassC, 1),
             ("gamma", ExampleClassC, 2),
         ]
-        # assert regime.link_functions(edges) throws a ValueError because of the None vertex
+        # assert regime.link_functions(edges) throws a ValueError because of
+        # the None vertex
         self.assertRaises(ValueError, regime.define_flow, edges)
         # assert regime.link_functions(edges) throws a ValueError because it is missing the
         # WM in its 'functions' argument

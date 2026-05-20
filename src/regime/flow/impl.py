@@ -3,15 +3,15 @@ Implements functions and classes responsible for the design of soft computing so
 such as the Regime class.
 """
 
-from typing import List, Tuple, Any, Union, Set, Iterable, Dict, OrderedDict
+from typing import Any, Dict, Iterable, List, OrderedDict, Set, Tuple, Union
 
 import igraph
 from rough.decisions import RoughDecisions
 
+from regime.flow.components import Process, Resource
+from regime.flow.threads import ComponentThread
 from regime.nodes import Node
 from regime.utils import merge_dicts
-from regime.flow.threads import ComponentThread
-from regime.flow.components import Process, Resource
 
 
 class Regime(
@@ -60,7 +60,8 @@ class Regime(
         self.add_processes()
 
         # now a required hyperparameters dictionary has been created from specifying the processes
-        # it must be populated with values from a provided configuration settings in the follow-up
+        # it must be populated with values from a provided configuration
+        # settings in the follow-up
 
         # now we can add the resources to the graph
         self.resources: Set[Resource] = set()
@@ -106,12 +107,15 @@ class Regime(
         processes: List[Process] = []
         required_hyperparameters: dict = {}
         for _callable in callables:
-            # the output attribute will later be changed once the ComponentThread executes
+            # the output attribute will later be changed once the
+            # ComponentThread executes
             if callable(_callable):
-                # e.g., name = "fuzzy_ml.clustering.empirical.find_empirical_fuzzy_sets"
+                # e.g., name =
+                # "fuzzy_ml.clustering.empirical.find_empirical_fuzzy_sets"
                 if isinstance(_callable, Node):
                     name: str = f"{_callable.__module__}.{type(_callable).__name__}"
-                    # find the hyperparameters required to be specified in configuration settings
+                    # find the hyperparameters required to be specified in
+                    # configuration settings
                     required_hyperparameters = merge_dicts(
                         existing=required_hyperparameters,
                         new=_callable.make_hyperparameters_dict(),
@@ -201,12 +205,14 @@ class Regime(
         if remaining_hyperparameters is None:
             remaining_hyperparameters = self.required_hyperparameters
 
-        # find all None values in remaining_hyperparameters and assign them from the config
+        # find all None values in remaining_hyperparameters and assign them
+        # from the config
         keys = remaining_hyperparameters.keys()
         for key in keys:
             if remaining_hyperparameters[key] is None:
                 remaining_hyperparameters[key] = configuration[key]
-                # add  the hyperparameter (with its value) as a resource for the Regime
+                # add the hyperparameter (with its value) as a resource for the
+                # Regime
                 self.add_resources(
                     resources={Resource(name=key, value=configuration[key])}
                 )
@@ -222,7 +228,9 @@ class Regime(
         configuration: Union[None, OrderedDict] = None,
         resources: Union[None, Set[Resource]] = None,  # resources are optional
         edges: Union[
-            None, List[Tuple[Any, Any, int]]  # edges are (source, target, arg_order)
+            # edges are (source, target, arg_order)
+            None,
+            List[Tuple[Any, Any, int]],
         ] = None,  # optional edges
         clean_up: bool = True,
     ) -> None:
@@ -241,13 +249,15 @@ class Regime(
         Returns:
             None
         """
-        # why is everything optional? --> We can set up the Regime graph in stages
+        # why is everything optional? --> We can set up the Regime graph in
+        # stages
 
         # define the hyperparameters' values for the processes
         if configuration is not None:
             self.define_hyperparameters(configuration=configuration)
 
-        # add the resources to the graph (check for name conflicts w/ hyperparameters)
+        # add the resources to the graph (check for name conflicts w/
+        # hyperparameters)
         if resources is not None:
             self.add_resources(resources=resources)
 
@@ -381,7 +391,8 @@ class Regime(
         )
 
         # create a subgraph consisting only of process vertices to find which vertices have no
-        # incoming edges (i.e., no process predecessors - they wait for nothing to finish)
+        # incoming edges (i.e., no process predecessors - they wait for nothing
+        # to finish)
         process_subgraph: igraph.Graph = self.graph.induced_subgraph(
             all_pending_vertices
         )
@@ -398,7 +409,8 @@ class Regime(
 
         frontier_vertices, thread = isolated_vertices, None
 
-        # note: functions must be unique or the below won't work (e.g., no 2 calls to 'train')
+        # note: functions must be unique or the below won't work (e.g., no 2
+        # calls to 'train')
         while True:
             if len(frontier_vertices) == 0:
                 break
@@ -406,7 +418,8 @@ class Regime(
             if frontier_vertex["type"] == "resource":
                 if frontier_vertex["output"] is not None:
                     # if the resource has output, then it is already complete
-                    # expand the frontier to include the successors of the resource
+                    # expand the frontier to include the successors of the
+                    # resource
                     frontier_vertices += frontier_vertex.successors()
                     continue  # skip the rest of the loop
                 raise ValueError(
@@ -458,7 +471,8 @@ class Regime(
                 # if isinstance(function, Node):
                 #     function = function()
                 thread: ComponentThread = ComponentThread(function, **kwargs)
-                frontier_vertex["thread"] = thread  # keep a reference to the thread
+                # keep a reference to the thread
+                frontier_vertex["thread"] = thread
                 thread.output = thread.function(**kwargs)
                 # thread.start()
                 # # thread.join()
