@@ -398,6 +398,34 @@ class TestRegime(unittest.TestCase):
         regime = Regime(callables=self.callables)
         self.assertRaises(ValueError, regime.start)
 
+    def test_start_raises_when_a_referenced_resource_has_no_output(self) -> None:
+        """
+        A resource referenced only by name (via an edge) and never given a value -
+        get_vertex() auto-creates such a resource with value=None - has no process
+        that produces it either, so start() finds it as a root vertex with no
+        output. This is a genuine configuration error (a required resource was
+        never supplied), and should raise rather than silently proceed.
+
+        Returns:
+            None
+        """
+        regime = Regime(callables={example_func})
+        regime.define_flow(edges=[("never_supplied", example_func, 0)])
+        self.assertRaises(ValueError, regime.start)
+
+    def test_define_flow_raises_on_duplicate_edge(self) -> None:
+        """
+        Adding the exact same (source, target, arg_specifier) edge twice should
+        raise, rather than silently creating a duplicate edge in the graph.
+
+        Returns:
+            None
+        """
+        regime = Regime(callables=self.callables)
+        edges = [(self.callables[0], self.callables[2], 0)]
+        regime.define_flow(edges, clean_up=False)
+        self.assertRaises(ValueError, regime.define_flow, edges, clean_up=False)
+
     def test_start(self) -> None:
         """
         Test a verbose definition of a self-organizing process (i.e., no shortcut method call).

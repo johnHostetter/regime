@@ -316,8 +316,8 @@ class Regime(
                 > 0
             ):
                 raise ValueError(
-                    f"An edge already exists between {source_vertex['function']} "
-                    f"and {target_vertex['function']}."
+                    f"An edge already exists between {source_vertex['name']} "
+                    f"and {target_vertex['name']}."
                 )
             self.graph.add_edge(source_vertex, target_vertex, arg=arg_specifier)
             if self.verbose:
@@ -458,7 +458,17 @@ class Regime(
         """
         function: callable = frontier_vertex["callable"]
         predecessors_vertices: igraph.VertexSeq = frontier_vertex.predecessors()
-        if frontier_vertex.degree() > 0:  # only consider connected functions
+        # a vertex with 2+ predecessors is appended to the frontier once per
+        # predecessor that completes (see the successors_vertices expansion below) -
+        # if two or more of those completions happen before any of the resulting
+        # frontier entries for this vertex is popped, every one of those entries
+        # will independently see all predecessors ready and re-execute `function`.
+        # complete_process_vertices is populated below specifically to prevent
+        # this; this guard is what actually enforces it.
+        if (
+            frontier_vertex.degree() > 0  # only consider connected functions
+            and frontier_vertex not in self.complete_process_vertices
+        ):
             if len(predecessors_vertices) == 0 or all(  # no predecessors are fine or
                 source_vertex["output"]
                 is not None  # for all predecessors, we have output
