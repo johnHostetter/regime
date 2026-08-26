@@ -13,6 +13,7 @@ import yaml
 from tests.submodule import ExampleClassB  # class located here to showcase hierarchy
 
 from regime import Node, Regime, Resource, hyperparameter
+from regime.flow.impl import _UNSET  # pylint: disable=protected-access
 
 # CUDA out of memory error for these tests
 AVAILABLE_DEVICE = torch.device("cpu")
@@ -216,56 +217,88 @@ class TestRegime(unittest.TestCase):
         # the Regime graph.
         self.assertRaises(ValueError, regime.define_flow, edges)
 
-    def test_with_functions_that_make_no_progress(self) -> None:
+    def test_a_process_returning_none_is_still_treated_as_produced(self) -> None:
         """
-        If the Regime object has vertices that possess an attribute called 'function', but
-        none of them make any progress, then the Regime procedure abruptly stops.
+        Regression guard: a process's real output can legitimately be None -
+        that must not be confused with "this process has not produced
+        anything yet" (the vertex's initial placeholder before it has run).
+        Before the _UNSET sentinel fix, both cases were represented as the
+        same None value, so a downstream process waiting on a None-returning
+        predecessor would wait forever, treating a real (if unremarkable)
+        output as if it never arrived - this used to be this exact test
+        (formerly named test_with_functions_that_make_no_progress), which
+        asserted that as the CORRECT, intended behavior. It is not: the
+        downstream process below must actually run.
 
         Returns:
             None
         """
 
-        def make_no_progress() -> None:
-            """
-            This function does nothing.
-
-            Returns:
-                None
-            """
+        def produces_none() -> None:
+            """A real process whose output is genuinely, meaningfully None."""
             return None
 
-        def wait_for_no_progress(arg_1: Any, arg_2: Any) -> None:
+        def consumes_the_none_output(**kwargs) -> str:
             """
-            This function waits for the two arguments to be printed.
-
-            Args:
-                arg_1: Any argument.
-                arg_2: Any argument.
-
-            Returns:
-                None
+            Receives produces_none's output under its full dotted name (see
+            Regime.get_keyword_arguments - predecessor kwargs are always
+            keyed by the predecessor's vertex name) and confirms it really
+            is None, not a placeholder for "not yet produced".
             """
-            print(arg_1, arg_2)
+            (value,) = kwargs.values()
+            assert value is None
+            return "ran despite the None input"
 
-        make_no_progress_1 = make_no_progress_2 = make_no_progress
-
-        callables = {
-            make_no_progress_1,
-            make_no_progress_2,
-            wait_for_no_progress,
-        }
+        callables = {produces_none, consumes_the_none_output}
         regime = Regime(callables=callables)
-        edges = [
-            (make_no_progress_1, wait_for_no_progress, 0),
-            (make_no_progress_2, wait_for_no_progress, 1),
-        ]
+        edges = [(produces_none, consumes_the_none_output, 0)]
         regime.define_flow(edges)
-        num_of_vertices, num_of_edges = len(callables), len(edges)
-        assert len(regime.graph.vs) == num_of_vertices
-        assert len(regime.graph.es) == num_of_edges
+        assert len(regime.graph.vs) == len(callables)
+        assert len(regime.graph.es) == len(edges)
         assert regime.start() == {
-            "tests.test_regime.wait_for_no_progress": None
-        }  # do nothing
+            "tests.test_regime.consumes_the_none_output": "ran despite the None input"
+        }
+
+    def test_start_raises_on_a_cycle_among_processes(self) -> None:
+        """
+        Regression guard: a pure cycle between two processes (each waiting on
+        the other's output) has no entry point at all (neither has an
+        incoming-edge count of 0), so start()'s isolated-vertex discovery
+        never queues either of them - previously they were then silently
+        dropped from the results with no error whatsoever. An unrelated,
+        independent process/consumer pair is included alongside the cycle to
+        confirm the raised error correctly names only the stuck processes,
+        not everything in the graph.
+
+        Returns:
+            None
+        """
+
+        def cycle_a(**kwargs) -> str:
+            return "a"
+
+        def cycle_b(**kwargs) -> str:
+            return "b"
+
+        def independent() -> str:
+            return "independent ran fine"
+
+        def consumes_independent(**kwargs) -> str:
+            (value,) = kwargs.values()
+            return f"consumed: {value}"
+
+        regime = Regime(callables={cycle_a, cycle_b, independent, consumes_independent})
+        regime.define_flow(
+            edges=[
+                (cycle_b, cycle_a, 0),
+                (cycle_a, cycle_b, 0),
+                (independent, consumes_independent, 0),
+            ]
+        )
+        with self.assertRaisesRegex(ValueError, "tests.test_regime.cycle_a") as context:
+            regime.start()
+        self.assertIn("tests.test_regime.cycle_b", str(context.exception))
+        self.assertNotIn("independent", str(context.exception))
 
     def test_add_invalid_source_vertex(self) -> None:
         """
@@ -380,9 +413,12 @@ class TestRegime(unittest.TestCase):
         # find the vertex for this function & its predecessors
         target_vertex = regime.graph.vs.find(callable_eq=self.callables[2])
 
+        # example_a/example_b haven't executed yet (start() was never called),
+        # so their vertices still hold the "not yet produced" sentinel
+        # rather than a real output.
         expected_kwargs = {
-            "example_a": None,
-            "example_b": None,
+            "example_a": _UNSET,
+            "example_b": _UNSET,
             "gamma": GAMMA,
         }
         assert regime.get_keyword_arguments(target_vertex) == expected_kwargs
@@ -535,3 +571,69 @@ class TestRegime(unittest.TestCase):
                 autocurve=True,  # curved edges
                 **visual_style,  # apply the visual style
             )
+
+
+class TestNameIndexSelfHealing(unittest.TestCase):
+    """
+    White-box coverage for Regime._resolve_name_vertex()'s verify-then-
+    rebuild-once strategy (the same pattern used by rough-theory's
+    granulation.py _item_index earlier this session): add_resources()/
+    get_vertex() cache each vertex's index by name so repeated lookups avoid
+    an O(V) igraph scan, but define_flow()'s clean_up deletes isolated
+    vertices, re-numbering every vertex after them - a stale cached index
+    must not be trusted blindly, or a name could silently resolve to the
+    wrong vertex (or an out-of-range one) instead of self-healing.
+    """
+
+    def test_resolves_correctly_when_cached_index_is_stale(self) -> None:
+        """
+        Directly corrupts the cache to point a real name at an index that
+        does not hold it (simulating what an external vertex deletion, such
+        as define_flow()'s clean_up, would do without ever touching the
+        cache) and confirms the lookup still resolves to the correct vertex -
+        and that the rebuild fixes the cache itself, not just the one lookup.
+        """
+
+        def produces() -> int:
+            """A trivial process to look up by name."""
+            return 42
+
+        def consumes(**kwargs) -> int:
+            """A trivial downstream consumer, just to give produces an edge."""
+            (value,) = kwargs.values()
+            return value + 1
+
+        regime = Regime(callables={produces, consumes})
+        produces_vertex = regime.get_vertex(produces)
+        produces_name = produces_vertex["name"]
+        real_index = produces_vertex.index
+
+        # corrupt the cache with an index that does not hold this name
+        regime._name_index[produces_name] = 999_999  # pylint: disable=protected-access
+
+        resolved = regime._resolve_name_vertex(  # pylint: disable=protected-access
+            produces_name
+        )
+        self.assertIsNotNone(resolved)
+        self.assertEqual(resolved.index, real_index)
+        self.assertEqual(resolved["name"], produces_name)
+        # the rebuild must have corrected the cache entry too, not just
+        # returned the right vertex for this one call
+        self.assertEqual(
+            regime._name_index[produces_name],  # pylint: disable=protected-access
+            real_index,
+        )
+
+    def test_returns_none_for_a_name_that_does_not_exist(self) -> None:
+        """
+        A name that was never registered (and isn't found even after a
+        rebuild) resolves to None, not a stale/incorrect vertex or a raised
+        exception - get_vertex() relies on this None to decide whether to
+        auto-create a new resource.
+        """
+        regime = Regime(callables={ExampleClassB})
+        self.assertIsNone(
+            regime._resolve_name_vertex(  # pylint: disable=protected-access
+                "never_registered"
+            )
+        )

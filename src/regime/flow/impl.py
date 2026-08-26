@@ -13,6 +13,14 @@ from regime.flow.threads import ComponentThread
 from regime.nodes import Node
 from regime.utils import merge_dicts
 
+# a vertex's "output" attribute starts out as this sentinel rather than None,
+# so a process/resource that legitimately produces/holds a value of None can
+# be told apart from one that has not produced anything yet (None itself is a
+# valid output - see unprepared_resource_vertices, start(), and
+# process_frontier()'s predecessor-readiness check, all of which compare
+# against this sentinel instead of None for exactly that reason).
+_UNSET = object()
+
 
 class Regime(
     RoughDecisions
@@ -46,6 +54,11 @@ class Regime(
         super().__init__()
         self.verbose = verbose
         self.complete_process_vertices: Set[igraph.Vertex] = set()
+        # maps a vertex's "name" attribute to its current index in self.graph,
+        # so add_resources()/get_vertex() don't need an O(V) igraph scan per
+        # call - see _resolve_name_vertex() for how this stays correct across
+        # vertex deletions (define_flow()'s clean_up re-numbers every vertex).
+        self._name_index: Dict[str, int] = {}
 
         # the set of callables must be non-empty
         if len(callables) == 0:
@@ -88,7 +101,9 @@ class Regime(
             A list of resource vertices.
         """
         return [
-            v for v in self.graph.vs if v["type"] == "resource" and v["output"] is None
+            v
+            for v in self.graph.vs
+            if v["type"] == "resource" and v["output"] is _UNSET
         ]
 
     @staticmethod
@@ -128,7 +143,7 @@ class Regime(
                         name=name,
                         callable=_callable,
                         thread=None,
-                        output=None,
+                        output=_UNSET,
                     )
                 )
             else:
@@ -144,12 +159,15 @@ class Regime(
         Returns:
             None
         """
+        start_index = self.graph.vcount()
         self.graph.add_vertices(len(self.processes))
         self.graph.vs["type"] = "process"
         self.graph.vs["name"] = [process.name for process in self.processes]
         self.graph.vs["callable"] = [process.callable for process in self.processes]
         self.graph.vs["output"] = [process.output for process in self.processes]
         self.graph.vs["thread"] = [process.thread for process in self.processes]
+        for offset, process in enumerate(self.processes):
+            self._register_name(process.name, start_index + offset)
 
     def add_resources(self, resources: Set[Resource]) -> None:
         """
@@ -170,9 +188,7 @@ class Regime(
             None
         """
         for resource in resources:
-            if resource in self.resources or self.graph.vs.select(
-                name_eq=resource.name
-            ):
+            if resource in self.resources or self._resolve_name_vertex(resource.name):
                 raise ValueError(f"Resource {resource.name} already exists.")
             self.resources.add(resource)
             self.graph.add_vertex(
@@ -182,6 +198,7 @@ class Regime(
                 output=resource.value,
                 thread=None,
             )
+            self._register_name(resource.name, self.graph.vcount() - 1)
 
     def define_hyperparameters(
         self,
@@ -329,6 +346,54 @@ class Regime(
                 [v.index for v in self.graph.vs if v.degree() == 0]
             )
 
+    def _register_name(self, name: str, index: int) -> None:
+        """
+        Record a vertex's current index under its "name" attribute, so later
+        lookups by name (add_resources()/get_vertex()) can skip the O(V)
+        igraph scan. Names are expected to be unique - add_resources() already
+        enforces this before a vertex is ever added.
+
+        Returns:
+            None
+        """
+        self._name_index[name] = index
+
+    def _rebuild_name_index(self) -> None:
+        """
+        Recompute the entire name -> index cache from the live graph. Needed
+        after any operation that re-numbers vertices (define_flow()'s
+        clean_up deletes isolated vertices, which shifts every later index).
+
+        Returns:
+            None
+        """
+        self._name_index = {v["name"]: v.index for v in self.graph.vs}
+
+    def _resolve_name_vertex(self, name: str) -> Union[None, igraph.Vertex]:
+        """
+        Look up a vertex by its "name" attribute in O(1) (amortized), falling
+        back to a full rebuild-and-retry if the cached index is stale (e.g.
+        vertices were deleted, shifting indices) - the same verify-then-
+        rebuild-once strategy used by rough-theory's granulation.py
+        _item_index, for the same reason: trusting a cached index without
+        checking it first risks silently returning the wrong vertex instead
+        of the intended one.
+
+        Returns:
+            The matching vertex, or None if no vertex has this name.
+        """
+        index = self._name_index.get(name)
+        vertex_count = self.graph.vcount()
+        if (
+            index is not None
+            and index < vertex_count
+            and self.graph.vs[index]["name"] == name
+        ):
+            return self.graph.vs[index]
+        self._rebuild_name_index()
+        index = self._name_index.get(name)
+        return None if index is None else self.graph.vs[index]
+
     def get_vertex(self, vertex_reference: Union[str, callable]) -> igraph.Vertex:
         """
         Get a vertex from the graph by its name or callable function reference. If it is a string,
@@ -344,15 +409,17 @@ class Regime(
         if isinstance(
             vertex_reference, str
         ):  # find the vertex by name, most likely resource
-            if len(self.graph.vs.select(name_eq=vertex_reference)) == 0:
+            vertex: Union[None, igraph.Vertex] = self._resolve_name_vertex(
+                vertex_reference
+            )
+            if vertex is None:
                 # this is a new resource that does not yet exist
                 # go ahead and make it - it may or may not be used later
                 new_resource = Resource(
-                    name=vertex_reference, value=None
+                    name=vertex_reference, value=_UNSET
                 )  # no value yet
                 self.add_resources(resources={new_resource})
-            # the vertex must exist now
-            vertex: igraph.Vertex = self.graph.vs.find(name_eq=vertex_reference)
+                vertex = self._resolve_name_vertex(vertex_reference)
         else:  # find the vertex by callable, most likely process
             try:
                 vertex: igraph.Vertex = self.graph.vs.find(callable_eq=vertex_reference)
@@ -416,7 +483,7 @@ class Regime(
                 break
             frontier_vertex = frontier_vertices.pop()
             if frontier_vertex["type"] == "resource":
-                if frontier_vertex["output"] is not None:
+                if frontier_vertex["output"] is not _UNSET:
                     # if the resource has output, then it is already complete
                     # expand the frontier to include the successors of the
                     # resource
@@ -429,6 +496,27 @@ class Regime(
                 frontier_vertices, thread = self.process_frontier(
                     frontier_vertex, frontier_vertices, thread
                 )
+
+        # every connected process must have executed by now - the only way one
+        # wouldn't have is a cycle among processes (each waiting on another's
+        # output, so none of them ever had every predecessor ready and none is
+        # an entry point with indegree 0 either) - the isolated-vertex
+        # discovery above silently never queues such a cycle at all, so
+        # without this check it would otherwise be dropped with no error.
+        incomplete_processes: List[igraph.Vertex] = [
+            v
+            for v in self.process_vertices
+            if v.degree() > 0 and v not in self.complete_process_vertices
+        ]
+        if incomplete_processes:
+            names = ", ".join(v["name"] for v in incomplete_processes)
+            raise ValueError(
+                f"The following process(es) never executed even though they "
+                f"are connected in the Regime's graph: {names}. This usually "
+                "means the graph contains a cycle among these processes "
+                "(each waiting on another's output), so none of them ever "
+                "had every predecessor's output ready."
+            )
 
         if thread is not None:
             # return the output of all the processes at the end of workflow
@@ -471,7 +559,7 @@ class Regime(
         ):
             if len(predecessors_vertices) == 0 or all(  # no predecessors are fine or
                 source_vertex["output"]
-                is not None  # for all predecessors, we have output
+                is not _UNSET  # for all predecessors, we have output
                 for source_vertex in predecessors_vertices
             ):
                 # get the keyword arguments for this function
@@ -486,8 +574,12 @@ class Regime(
                 thread.output = thread.function(**kwargs)
                 # thread.start()
                 # # thread.join()
-                # retrieve thread output
-                self.graph.vs.find(thread_eq=thread)["output"] = thread.output
+                # retrieve thread output - frontier_vertex IS the vertex this
+                # thread was just assigned to two lines above, so no lookup is
+                # needed (a `self.graph.vs.find(thread_eq=thread)` re-scan
+                # used to be done here instead, an unnecessary O(V) cost paid
+                # on every single process execution)
+                frontier_vertex["output"] = thread.output
                 self.complete_process_vertices.add(frontier_vertex)
                 # update any resources that have been modified by the function
                 successors_vertices = frontier_vertex.successors()
