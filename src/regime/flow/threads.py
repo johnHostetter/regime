@@ -1,52 +1,36 @@
 """
-Implements the necessary threading logic for the soft.computing.organize.SelfOrganize class.
+Implements a lightweight record of a process's callable, arguments, and output
+for the Regime class.
 """
 
-import threading
-from warnings import warn
+from typing import Any, Dict
 
 
-class ComponentThread(threading.Thread):
+class ComponentThread:
     """
-    This class contains the necessary logic to prepare a callable function
-    for the Regime class. It allows for the callable function to be
-    partially initialized with keyword arguments, assign a name to it, as well
-    as saves the function's output in self.output when it finishes.
+    Carries a callable function for the Regime class along with the keyword
+    arguments to invoke it with, an assigned name, and its output once it has
+    run.
+
+    Despite the name (kept for backward compatibility - nothing outside this
+    module constructs or type-checks against it), this does not run on a
+    separate thread: Regime.process_frontier() always calls
+    `thread.function(**kwargs)` directly, synchronously, on the calling
+    thread. Previously this class subclassed threading.Thread and implemented
+    run()/join() for genuine concurrent execution, but nothing ever called
+    start()/join() to use that machinery, so it was dead code - it paid
+    threading.Thread.__init__'s overhead, and its own DeprecationWarning fired
+    on every single process execution, on every run.
     """
 
     def __init__(self, function: callable, name: str = None, **kwargs):
-        warn(
-            "This class is possibly deprecated and will be removed in a future release.",
-            DeprecationWarning,
-        )
-        super().__init__()
         self.function = function
-        self.kwargs = kwargs
+        self.kwargs: Dict[str, Any] = kwargs
         if name is None:
             self.name = self.graph_name = str(function)
         else:
             self.name, self.graph_name = name, "\n".join(name.split(" "))
         self.output = None
-        self.exception = None
 
     def __str__(self) -> str:
         return self.graph_name
-
-    def run(self) -> None:
-        """
-        The function that is executed in a new thread.
-
-        Returns:
-            None
-        """
-        try:
-            self.output = self.function(**self.kwargs)
-        # pylint: disable=locally-disabled, broad-exception-caught
-        except BaseException as exception:
-            self.exception = exception
-
-    def join(self, timeout=None) -> None:
-        threading.Thread.join(self, timeout)
-        # re-raise any exception thrown in the thread
-        if self.exception:
-            raise self.exception
