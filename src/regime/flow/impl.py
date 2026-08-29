@@ -22,18 +22,29 @@ from regime.utils import merge_dicts
 _UNSET = object()
 
 
-class Regime(
-    RoughGranulation
-):  # inherit from RoughGranulation for the graph/tagging plumbing it actually uses -
-    # if rough-set analysis (reducts, decision tables) is ever needed on a Regime's
-    # own graph, wrap it on demand: RoughDecisions(graph=regime.graph,
-    # attribute_table=regime.attribute_table) - see RoughGranulation's own
-    # __init__ docstring.
+class Regime(RoughGranulation):  # graph/tagging plumbing only - see docstring below
     """
     The Regime class facilitates the convenient design of self-organizing solutions
     by adding callable function references to a RoughGranulation graph as vertices, and
     using the edges that connect the vertices (i.e., functions) to determine the flow of
     data/information from function to function.
+
+    Rough-theory base class (2026-08-29): inherits only RoughGranulation (the graph/
+    attribute_table plumbing this class actually uses via self.graph throughout),
+    not the fuller RoughApproximation -> RoughOperations -> RoughDecisions analysis
+    chain it used to inherit via `RoughDecisions` ("inherit from RoughDecisions to
+    have access to functionality", the old comment here). Confirmed (grep) this class
+    never calls a single RoughApproximation/RoughOperations/RoughDecisions method -
+    same finding as fuzzy-theory's KnowledgeBase, a separate, independent inheritor of
+    the same chain that got the identical fix in the same session. See
+    external/pypi/rough-theory's rough/granulation.py module docstring for the full
+    rationale.
+
+    Rough-set analysis (reducts, decision tables) is still available on demand if this
+    class's own graph is ever worth analyzing that way:
+
+        from rough.decisions import RoughDecisions
+        analysis = RoughDecisions(graph=regime.graph, attribute_table=regime.attribute_table)
     """
 
     # (0) receive all processes as a list of functions
