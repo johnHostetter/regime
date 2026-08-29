@@ -6,7 +6,7 @@ such as the Regime class.
 from typing import Any, Dict, Iterable, List, OrderedDict, Set, Tuple, Union
 
 import igraph
-from rough.decisions import RoughDecisions
+from rough.granulation import RoughGranulation
 
 from regime.flow.components import Process, Resource
 from regime.flow.threads import ComponentThread
@@ -23,12 +23,16 @@ _UNSET = object()
 
 
 class Regime(
-    RoughDecisions
-):  # inherit from RoughDecisions to have access to functionality
+    RoughGranulation
+):  # inherit from RoughGranulation for the graph/tagging plumbing it actually uses -
+    # if rough-set analysis (reducts, decision tables) is ever needed on a Regime's
+    # own graph, wrap it on demand: RoughDecisions(graph=regime.graph,
+    # attribute_table=regime.attribute_table) - see RoughGranulation's own
+    # __init__ docstring.
     """
     The Regime class facilitates the convenient design of self-organizing solutions
-    by adding callable function references to a RoughDecisions graph as vertices, and using
-    the edges that connect the vertices (i.e., functions) to determine the flow of
+    by adding callable function references to a RoughGranulation graph as vertices, and
+    using the edges that connect the vertices (i.e., functions) to determine the flow of
     data/information from function to function.
     """
 
@@ -285,7 +289,7 @@ class Regime(
         self, edges: List[Tuple[Any, Any, Union[int, str]]], clean_up: bool = True
     ) -> None:
         """
-        Links callables in the Regime's graph (via RoughDecisions) if they exist as vertices.
+        Links callables in the Regime's graph (via RoughGranulation) if they exist as vertices.
 
         This allows the transfer of inputs and outputs to easily occur later on.
 
